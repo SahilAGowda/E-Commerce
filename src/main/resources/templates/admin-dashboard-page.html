@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: rgb(223, 219, 219);
+      color: black;
+    }
+
+    .container {
+      display: flex;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(to bottom, #0f47e0, #4b67af);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      padding-top: 20px;
+    }
+
+    .sidebar button {
+      margin-top: 40px;
+      background: none;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: left;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .sidebar button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .main {
+      flex-grow: 1;
+      padding: 20px;
+      margin-left: 20%;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .topbar input[type="search"] {
+      padding: 10px 15px;
+      border-radius: 25px;
+      border: none;
+      background-color: white;
+      color: rgb(0, 0, 0);
+      outline: none;
+      font-size: 14px;
+      width: 250px;
+    }
+
+    .topbar input[type="search"]::placeholder {
+      color: #888;
+    }
+
+    .cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .chart-box {
+      background: white;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    #salesChart {
+      background: white;
+      margin-top: 0px;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .bar-container {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      height: 300px;
+      width: 100%;
+    }
+
+    .bar {
+      flex: 1;
+      background: linear-gradient(to top, #2a5de800, #2a5de8);
+      border-radius: 5px 5px 0 0;
+    }
+
+    .nextsection {
+      margin-bottom: 30px;
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #2e2e3e;
+    }
+
+    th {
+      background-color: #ffffff;
+    }
+
+    .status-approved {
+      color: #00c853;
+      background: rgba(0, 200, 83, 0.1);
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .status-pending {
+      color: #ffa000;
+      background: rgba(255, 160, 0, 0.1);
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .status-rejected {
+      color: #d50000;
+      background: rgba(213, 0, 0, 0.1);
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .card {
+      flex: 1;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .cardlast {
+      flex: 1;
+      border-radius: 10px;
+      padding: 20px;
+      background: white;
+      padding: 20px;
+      top: 20px;
+      border-radius: 10px;
+      min-width: 200px;
+    }
+
+    .todo-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 10px 0;
+    }
+
+    .todo-list input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    .chart {
+      height: 300px;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .donut {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: conic-gradient(#2a5de8 0% 40%, rgba(164, 161, 161, 0.611) 40% 100%);
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <button>Dashboard</button>
+      <button>Add Product</button>
+      <button>Edit Product</button>
+      <button>Delete Product</button>
+      <button>Manage Orders</button>
+      <button>Manage Orders</button>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <h2>Vanta Admin</h2>
+        <div>
+          <input type="search" placeholder="Search anything..." />
+        </div>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <h3>Orders</h3>
+          <p>$8753.00</p>
+          <small>18.33% Since last month</small>
+        </div>
+        <div class="card">
+          <h3>Sales</h3>
+          <p>$8753.00</p>
+          <small>18.33% Since last month</small>
+        </div>
+        <div class="card">
+          <h3>Revenue</h3>
+          <p>$8753.00</p>
+          <small>18.33% Since last month</small>
+        </div>
+        <div class="card">
+          <h3>Cost</h3>
+          <p>$8753.00</p>
+          <small>18.33% Since last month</small>
+        </div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-header">
+          <h3>Orders</h3>
+          <button
+            style="background-color: #2a5de8; border: none; color: white; padding: 5px 10px; border-radius: 5px;">Month</button>
+        </div>
+        <div class="bar-container">
+          <div class="bar" style="height: 100px;"></div>
+          <div class="bar" style="height: 180px;"></div>
+          <div class="bar" style="height: 90px;"></div>
+          <div class="bar" style="height: 200px;"></div>
+          <div class="bar" style="height: 150px;"></div>
+          <div class="bar" style="height: 70px;"></div>
+          <div class="bar" style="height: 220px;"></div>
+          <div class="bar" style="height: 160px;"></div>
+        </div>
+      </div>
+      <div class="nextsection">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Assignee</th>
+              <th>Task Details</th>
+              <th>Payment Method</th>
+              <th>Payment Status</th>
+              <th>Amount</th>
+              <th>Tracking Number</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>#320</td>
+              <td>Mark C.Diaz</td>
+              <td>Support of theme</td>
+              <td>Credit card</td>
+              <td><span class="status-approved">Approved</span></td>
+              <td>$12,245</td>
+              <td>JPBBN435893458</td>
+            </tr>
+            <tr>
+              <td>#321</td>
+              <td>Jose D</td>
+              <td>Verify your email address !</td>
+              <td>Internet banking</td>
+              <td><span class="status-pending">Pending</span></td>
+              <td>$12,245</td>
+              <td>BDYBN435893325</td>
+            </tr>
+            <tr>
+              <td>#322</td>
+              <td>Philips T</td>
+              <td>Item support message send</td>
+              <td>Credit card</td>
+              <td><span class="status-approved">Approved</span></td>
+              <td>$12,245</td>
+              <td>JSNTN435884258</td>
+            </tr>
+            <tr>
+              <td>#323</td>
+              <td>Luke Pixel</td>
+              <td>New submission on website</td>
+              <td>Cash on delivery</td>
+              <td><span class="status-rejected">Rejected</span></td>
+              <td>$12,245</td>
+              <td>JPABT435893678</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <h3>Traffic Source</h3>
+          <div class="donut">12 M</div>
+          <p style="text-align:center;">Traffic through Google and Facebook for the day</p>
+          <p style="text-align:center;">Facebook - 40% | Google - 60%</p>
+        </div>
+        <div class="card">
+          <h3>Todo</h3>
+          <input type="text" placeholder="What do you need to do today?"
+            style="width:100%;padding:10px;margin-bottom:10px;border-radius:5px;border:none;background:#ffffff;color:black;" />
+          <ul class="todo-list" style="list-style:none;padding:0;">
+            <li><label><input type="checkbox" /> Pick up kids from school</label> ❌</li>
+            <li><label><input type="checkbox" checked /> Prepare for presentation</label> ✅</li>
+            <li><label><input type="checkbox" /> Print Statements</label> ❌</li>
+            <li><label><input type="checkbox" /> Create invoice</label> ❌</li>
+            <li><label><input type="checkbox" checked /> Call John</label> ✅</li>
+            <li><label><input type="checkbox" /> Meeting with Alisa</label> ❌</li>
+          </ul>
+        </div>
+        <div class="cardlast">
+          <h3>Daily Sales</h3>
+          <p>1000              |            800</p>
+          <p> online                            store</p>
+          <div class="chart">
+            <!-- Placeholder for line chart -->
+            <canvas id="salesChart" width="450px" height="450px"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            label: 'Online',
+            data: [1000, 1600, 1400, 1300, 2200, 1700],
+            borderColor: '#ff6f91',
+            fill: false,
+            tension: 0.3
+          },
+          {
+            label: 'Store',
+            data: [800, 900, 700, 1100, 1500, 1800],
+            borderColor: '#6a93ff',
+            fill: false,
+            tension: 0.3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: 'white'
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+
+</html>
