@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | MyShop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4f46e5;
+      --secondary-color: #10b981;
+      --light-bg: #f9fafb;
+      --border-radius: 12px;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f0f9ff 0%, #f5f7fa 100%);
+      font-family: 'Poppins', sans-serif;
+      color: #374151;
+      min-height: 100vh;
+    }
+    
+    .checkout-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .checkout-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+    
+    .checkout-header h2 {
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    
+    .checkout-header p {
+      color: #6b7280;
+    }
+    
+    .checkout-steps {
+      display: flex;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    
+    .step {
+      display: flex;
+      align-items: center;
+      margin: 0 1.5rem;
+    }
+    
+    .step-number {
+      background-color: var(--primary-color);
+      color: white;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      margin-right: 0.75rem;
+    }
+    
+    .step.completed .step-number {
+      background-color: var(--secondary-color);
+    }
+    
+    .step.active .step-text {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .form-section {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-section:hover {
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+    
+    .form-section h5 {
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .form-section h5 i {
+      color: var(--primary-color);
+      margin-right: 0.75rem;
+    }
+    
+    .form-label {
+      font-weight: 500;
+      color: #4b5563;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+    
+    .input-group-text {
+      background-color: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px 0 0 8px;
+    }
+    
+    .form-check-input:checked {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background-color: #4338ca;
+      transform: translateY(-1px);
+    }
+    
+    .btn-place-order {
+      background-color: var(--secondary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 1rem 2rem;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-place-order:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+    
+    .order-summary {
+      background: #f8fafc;
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+    }
+    
+    .order-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .order-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    
+    .item-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      background-color: #e5e7eb;
+      margin-right: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .item-details {
+      flex-grow: 1;
+    }
+    
+    .item-title {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    
+    .item-price {
+      font-weight: 600;
+      color: #1f2937;
+    }
+    
+    .order-totals {
+      margin-top: 1.5rem;
+    }
+    
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    
+    .total-row.grand-total {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #1f2937;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    
+    .payment-methods {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 1.5rem;
+    }
+    
+    .payment-method {
+      text-align: center;
+      padding: 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+      margin: 0 0.5rem;
+    }
+    
+    .payment-method:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+    
+    .payment-method.active {
+      border-color: var(--primary-color);
+      background-color: rgba(79, 70, 229, 0.05);
+    }
+    
+    .payment-method i {
+      font-size: 1.5rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+    }
+    
+    .payment-method.active i {
+      color: var(--primary-color);
+    }
+    
+    .thank-you {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    
+    .success-animation {
+      margin-bottom: 2rem;
+    }
+    
+    .success-circle {
+      width: 100px;
+      height: 100px;
+      background-color: var(--secondary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+    
+    .success-circle i {
+      color: white;
+      font-size: 3rem;
+    }
+    
+    @media (max-width: 768px) {
+      .checkout-steps {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .step {
+        margin: 0.5rem 0;
+      }
+      
+      .payment-methods {
+        flex-direction: column;
+      }
+      
+      .payment-method {
+        margin: 0.5rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="checkout-container">
+    <!-- Progress Tracker -->
+    <div class="checkout-header">
+      <h2>Checkout</h2>
+      <p class="text-muted">Complete your purchase securely</p>
+      
+      <div class="checkout-steps">
+        <div class="step completed">
+          <div class="step-number">1</div>
+          <div class="step-text">Cart</div>
+        </div>
+        <div class="step active">
+          <div class="step-number">2</div>
+          <div class="step-text">Shipping</div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-text">Payment</div>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-text">Confirmation</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <!-- Checkout Form -->
+      <div class="col-lg-8">
+        <form id="checkoutForm" action="/order/confirm" method="post">
+          <!-- Customer Information -->
+          <div class="form-section">
+            <h5><i class="fas fa-user"></i> Customer Information</h5>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                  <input type="email" id="email" class="form-control" name="email" required>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                  <input type="tel" id="phone" class="form-control" name="phone" required>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Billing Address -->
+          <div class="form-section">
+            <h5><i class="fas fa-file-invoice"></i> Billing Address</h5>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="billingFirstName" class="form-label">First Name</label>
+                <input type="text" id="billingFirstName" class="form-control" name="billingFirstName" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="billingLastName" class="form-label">Last Name</label>
+                <input type="text" id="billingLastName" class="form-control" name="billingLastName" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="billingAddress1" class="form-label">Address Line 1</label>
+              <input type="text" id="billingAddress1" class="form-control" name="billingAddress1" required>
+            </div>
+            <div class="mb-3">
+              <label for="billingAddress2" class="form-label">Address Line 2 (Optional)</label>
+              <input type="text" id="billingAddress2" class="form-control" name="billingAddress2">
+            </div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="billingCity" class="form-label">City</label>
+                <input type="text" id="billingCity" class="form-control" name="billingCity" required>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="billingState" class="form-label">State/Province</label>
+                <select id="billingState" class="form-select" name="billingState" required>
+                  <option value="" selected disabled>Select...</option>
+                  <option value="AL">Alabama</option>
+                  <option value="AK">Alaska</option>
+                  <option value="AZ">Arizona</option>
+                  <!-- Add more states as needed -->
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="billingZip" class="form-label">ZIP/Postal Code</label>
+                <input type="text" id="billingZip" class="form-control" name="billingZip" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="billingCountry" class="form-label">Country</label>
+              <select id="billingCountry" class="form-select" name="billingCountry" required>
+                <option value="" selected disabled>Select...</option>
+                <option value="US">United States</option>
+                <option value="CA">Canada</option>
+                <option value="UK">United Kingdom</option>
+                <!-- Add more countries as needed -->
+              </select>
+            </div>
+          </div>
+          
+          <!-- Shipping Address -->
+          <div class="form-section">
+            <h5><i class="fas fa-shipping-fast"></i> Shipping Address</h5>
+            <div class="form-check mb-3">
+              <input type="checkbox" id="sameAsBilling" class="form-check-input" name="sameAsBilling">
+              <label for="sameAsBilling" class="form-check-label">Same as Billing Address</label>
+            </div>
+            <div id="shippingAddressFields">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="shippingFirstName" class="form-label">First Name</label>
+                  <input type="text" id="shippingFirstName" class="form-control" name="shippingFirstName">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="shippingLastName" class="form-label">Last Name</label>
+                  <input type="text" id="shippingLastName" class="form-control" name="shippingLastName">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="shippingAddress1" class="form-label">Address Line 1</label>
+                <input type="text" id="shippingAddress1" class="form-control" name="shippingAddress1">
+              </div>
+              <div class="mb-3">
+                <label for="shippingAddress2" class="form-label">Address Line 2 (Optional)</label>
+                <input type="text" id="shippingAddress2" class="form-control" name="shippingAddress2">
+              </div>
+              <div class="row">
+                <div class="col-md-4 mb-3">
+                  <label for="shippingCity" class="form-label">City</label>
+                  <input type="text" id="shippingCity" class="form-control" name="shippingCity">
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="shippingState" class="form-label">State/Province</label>
+                  <select id="shippingState" class="form-select" name="shippingState">
+                    <option value="" selected disabled>Select...</option>
+                    <option value="AL">Alabama</option>
+                    <option value="AK">Alaska</option>
+                    <option value="AZ">Arizona</option>
+                    <!-- Add more states as needed -->
+                  </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label for="shippingZip" class="form-label">ZIP/Postal Code</label>
+                  <input type="text" id="shippingZip" class="form-control" name="shippingZip">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="shippingCountry" class="form-label">Country</label>
+                <select id="shippingCountry" class="form-select" name="shippingCountry">
+                  <option value="" selected disabled>Select...</option>
+                  <option value="US">United States</option>
+                  <option value="CA">Canada</option>
+                  <option value="UK">United Kingdom</option>
+                  <!-- Add more countries as needed -->
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Shipping Method -->
+          <div class="form-section">
+            <h5><i class="fas fa-truck"></i> Shipping Method</h5>
+            <div class="form-check mb-3">
+              <input type="radio" id="standardShipping" class="form-check-input" name="shippingMethod" value="standard" checked>
+              <label for="standardShipping" class="form-check-label">
+                <div class="d-flex justify-content-between w-100">
+                  <span>Standard Shipping (3-5 business days)</span>
+                  <span>$5.99</span>
+                </div>
+              </label>
+            </div>
+            <div class="form-check mb-3">
+              <input type="radio" id="expressShipping" class="form-check-input" name="shippingMethod" value="express">
+              <label for="expressShipping" class="form-check-label">
+                <div class="d-flex justify-content-between w-100">
+                  <span>Express Shipping (1-2 business days)</span>
+                  <span>$12.99</span>
+                </div>
+              </label>
+            </div>
+            <div class="form-check">
+              <input type="radio" id="overnightShipping" class="form-check-input" name="shippingMethod" value="overnight">
+              <label for="overnightShipping" class="form-check-label">
+                <div class="d-flex justify-content-between w-100">
+                  <span>Overnight Shipping (Next business day)</span>
+                  <span>$19.99</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Order Summary -->
+      <div class="col-lg-4">
+        <div class="form-section">
+          <h5><i class="fas fa-shopping-cart"></i> Order Summary</h5>
+          <div class="order-summary">
+            <div class="order-item">
+              <div class="item-image">
+                <i class="fas fa-tshirt text-muted"></i>
+              </div>
+              <div class="item-details">
+                <div class="item-title">Premium T-Shirt</div>
+                <div class="text-muted">Size: M | Color: Blue</div>
+              </div>
+              <div class="item-price">$29.99</div>
+            </div>
+            <div class="order-item">
+              <div class="item-image">
+                <i class="fas fa-shoe-prints text-muted"></i>
+              </div>
+              <div class="item-details">
+                <div class="item-title">Running Shoes</div>
+                <div class="text-muted">Size: 10 | Color: Black</div>
+              </div>
+              <div class="item-price">$89.99</div>
+            </div>
+            
+            <div class="order-totals">
+              <div class="total-row">
+                <span>Subtotal</span>
+                <span>$119.98</span>
+              </div>
+              <div class="total-row">
+                <span>Shipping</span>
+                <span id="shippingCost">$5.99</span>
+              </div>
+              <div class="total-row">
+                <span>Tax</span>
+                <span>$12.00</span>
+              </div>
+              <div class="total-row grand-total">
+                <span>Total</span>
+                <span id="orderTotal">$137.97</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <div class="form-floating mb-3">
+              <input type="text" id="promoCode" class="form-control" placeholder="Promo Code">
+              <label for="promoCode">Promo Code</label>
+            </div>
+            <button type="button" class="btn btn-primary w-100">Apply Code</button>
+          </div>
+          
+          <div class="payment-section mt-4">
+            <h6>Payment Method</h6>
+            <div class="payment-methods">
+              <div class="payment-method active">
+                <i class="fab fa-cc-visa"></i>
+                <div>Credit Card</div>
+              </div>
+              <div class="payment-method">
+                <i class="fab fa-paypal"></i>
+                <div>PayPal</div>
+              </div>
+              <div class="payment-method">
+                <i class="fas fa-wallet"></i>
+                <div>Wallet</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Place Order Button -->
+          <div class="mt-4">
+            <button type="submit" form="checkoutForm" class="btn btn-place-order w-100">
+              <i class="fas fa-lock me-2"></i> Complete Purchase
+            </button>
+          </div>
+          
+          <div class="text-center mt-3">
+            <div class="d-flex justify-content-center">
+              <i class="fas fa-shield-alt text-success me-2"></i>
+              <span class="text-muted small">Secure Checkout</span>
+            </div>
+            <div class="mt-2">
+              <i class="fab fa-cc-visa me-2 text-primary"></i>
+              <i class="fab fa-cc-mastercard me-2 text-danger"></i>
+              <i class="fab fa-cc-amex me-2 text-info"></i>
+              <i class="fab fa-cc-discover text-warning"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Handle "Same as Billing" checkbox
+    document.getElementById('sameAsBilling').addEventListener('change', function() {
+      const fields = document.getElementById('shippingAddressFields');
+      fields.style.display = this.checked ? 'none' : 'block';
+      
+      if (this.checked) {
+        // Copy billing information to shipping fields
+        document.getElementById('shippingFirstName').value = document.getElementById('billingFirstName').value;
+        document.getElementById('shippingLastName').value = document.getElementById('billingLastName').value;
+        document.getElementById('shippingAddress1').value = document.getElementById('billingAddress1').value;
+        document.getElementById('shippingAddress2').value = document.getElementById('billingAddress2').value;
+        document.getElementById('shippingCity').value = document.getElementById('billingCity').value;
+        document.getElementById('shippingState').value = document.getElementById('billingState').value;
+        document.getElementById('shippingZip').value = document.getElementById('billingZip').value;
+        document.getElementById('shippingCountry').value = document.getElementById('billingCountry').value;
+      }
+    });
+    
+    // Update shipping cost and total when shipping method changes
+    const shippingOptions = document.querySelectorAll('input[name="shippingMethod"]');
+    const shippingCostElement = document.getElementById('shippingCost');
+    const orderTotalElement = document.getElementById('orderTotal');
+    const subtotal = 119.98;
+    const tax = 12.00;
+    
+    shippingOptions.forEach(option => {
+      option.addEventListener('change', function() {
+        let shippingCost = 5.99;
+        
+        if (this.value === 'express') {
+          shippingCost = 12.99;
+        } else if (this.value === 'overnight') {
+          shippingCost = 19.99;
+        }
+        
+        shippingCostElement.textContent = `$${shippingCost.toFixed(2)}`;
+        const total = subtotal + tax + shippingCost;
+        orderTotalElement.textContent = `$${total.toFixed(2)}`;
+      });
+    });
+    
+    // Payment method selection
+    const paymentMethods = document.querySelectorAll('.payment-method');
+    paymentMethods.forEach(method => {
+      method.addEventListener('click', function() {
+        paymentMethods.forEach(m => m.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // Form validation
+    document.getElementById('checkoutForm').addEventListener('submit', function(event) {
+      // For demo purposes - prevent actual form submission
+      event.preventDefault();
+      
+      const form = this;
+      if (form.checkValidity()) {
+        // In a real app, you would submit the form data to your server
+        // For demo purposes, let's show a success message
+        document.querySelector('.checkout-container').innerHTML = `
+          <div class="thank-you">
+            <div class="success-animation">
+              <div class="success-circle">
+                <i class="fas fa-check"></i>
+              </div>
+            </div>
+            <h2>Thank You for Your Order!</h2>
+            <p class="text-muted">Your order has been placed successfully.</p>
+            <p>Order #: ORD-${Math.floor(100000 + Math.random() * 900000)}</p>
+            <p>A confirmation email has been sent to your email address.</p>
+            <div class="mt-4">
+              <a href="/" class="btn btn-primary">Continue Shopping</a>
+            </div>
+          </div>
+        `;
+      } else {
+        // Trigger browser's native validation UI
+        form.reportValidity();
+      }
+    });
+  </script>
+</body>
+</html>
