@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment | MyShop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4f46e5;
+      --secondary-color: #10b981;
+      --light-bg: #f0f9ff;
+      --border-radius: 12px;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f0f9ff 0%, #f5f7fa 100%);
+      font-family: 'Poppins', sans-serif;
+      color: #374151;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    
+    .payment-container {
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    
+    .checkout-steps {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    
+    .step {
+      display: flex;
+      align-items: center;
+      margin: 0 1rem;
+    }
+    
+    .step-number {
+      background-color: #d1d5db;
+      color: white;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      margin-right: 0.75rem;
+    }
+    
+    .step.completed .step-number {
+      background-color: var(--secondary-color);
+    }
+    
+    .step.active .step-number {
+      background-color: var(--primary-color);
+    }
+    
+    .step.active .step-text {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .payment-form-container {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+    
+    .payment-header {
+      background-color: #f9fafb;
+      padding: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .payment-body {
+      padding: 2rem;
+    }
+    
+    .payment-methods {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .payment-method {
+      flex: 1;
+      min-width: 120px;
+      padding: 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .payment-method:hover {
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    .payment-method.active {
+      border-color: var(--primary-color);
+      background-color: rgba(79, 70, 229, 0.05);
+    }
+    
+    .payment-method i {
+      font-size: 1.5rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    
+    .payment-method.active i {
+      color: var(--primary-color);
+    }
+    
+    .form-label {
+      font-weight: 500;
+      color: #4b5563;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+    
+    .card-container {
+      perspective: 1000px;
+      height: 200px;
+      margin-bottom: 2rem;
+    }
+    
+    .credit-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
+      padding: 1.5rem;
+      color: white;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .credit-card.flipped {
+      transform: rotateY(180deg);
+    }
+    
+    .credit-card-front,
+    .credit-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+    }
+    
+    .credit-card-back {
+      transform: rotateY(180deg);
+    }
+    
+    .card-number {
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      margin-top: 3rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .card-details {
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .card-holder {
+      text-transform: uppercase;
+    }
+    
+    .magnetic-strip {
+      background-color: #2d3748;
+      height: 40px;
+      margin: 1rem 0;
+    }
+    
+    .signature-strip {
+      background-color: white;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: #4a5568;
+      border-radius: 4px;
+    }
+    
+    .card-brand {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+    }
+    
+    .card-chip {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      width: 45px;
+      height: 35px;
+      background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+      border-radius: 6px;
+      box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-floating > .form-control {
+      height: calc(3.5rem + 2px);
+      padding: 1rem 0.75rem;
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+      transform: scale(0.8) translateY(-0.5rem) translateX(0.15rem);
+    }
+    
+    .form-floating > label {
+      padding: 1rem 0.75rem;
+    }
+    
+    .input-icon {
+      position: absolute;
+      top: 50%;
+      right: 1rem;
+      transform: translateY(-50%);
+      color: #9ca3af;
+    }
+    
+    .btn-pay {
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      padding: 1rem 2rem;
+      color: white;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-pay:hover {
+      background-color: #4338ca;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+    
+    .order-summary {
+      background-color: #f9fafb;
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    
+    .grand-total {
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding-top: 0.75rem;
+      margin-top: 0.75rem;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .security-badges {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .security-badge {
+      display: flex;
+      align-items: center;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+    
+    .security-badge i {
+      color: var(--secondary-color);
+      margin-right: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+      .checkout-steps {
+        display: none;
+      }
+      
+      .payment-methods {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="payment-container">
+    <!-- Progress Tracker -->
+    <div class="checkout-steps">
+      <div class="step completed">
+        <div class="step-number">1</div>
+        <div class="step-text">Cart</div>
+      </div>
+      <div class="step completed">
+        <div class="step-number">2</div>
+        <div class="step-text">Shipping</div>
+      </div>
+      <div class="step active">
+        <div class="step-number">3</div>
+        <div class="step-text">Payment</div>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-text">Confirmation</div>
+      </div>
+    </div>
+    
+    <div class="payment-form-container">
+      <!-- Payment Header -->
+      <div class="payment-header">
+        <h4 class="mb-0 text-center">Complete Your Payment</h4>
+      </div>
+      
+      <!-- Payment Body -->
+      <div class="payment-body">
+        <!-- Payment Method Selection -->
+        <div class="mb-4">
+          <h6 class="mb-3">Select Payment Method</h6>
+          <div class="payment-methods">
+            <div class="payment-method active" data-method="credit-card">
+              <i class="fas fa-credit-card"></i>
+              <div>Credit Card</div>
+            </div>
+            <div class="payment-method" data-method="paypal">
+              <i class="fab fa-paypal"></i>
+              <div>PayPal</div>
+            </div>
+            <div class="payment-method" data-method="apple-pay">
+              <i class="fab fa-apple-pay"></i>
+              <div>Apple Pay</div>
+            </div>
+            <div class="payment-method" data-method="google-pay">
+              <i class="fab fa-google-pay"></i>
+              <div>Google Pay</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Credit Card Display -->
+        <div class="card-container" id="creditCardDisplay">
+          <div class="credit-card" id="creditCard">
+            <div class="credit-card-front">
+              <div class="card-chip"></div>
+              <div class="card-brand">
+                <i class="fab fa-cc-visa fa-2x"></i>
+              </div>
+              <div class="card-number" id="cardNumberDisplay">•••• •••• •••• ••••</div>
+              <div class="card-details">
+                <div class="card-holder">
+                  <div class="text-uppercase text-sm opacity-70">Card Holder</div>
+                  <div id="cardHolderDisplay">Your Name</div>
+                </div>
+                <div class="card-expires">
+                  <div class="text-uppercase text-sm opacity-70">Expires</div>
+                  <div id="cardExpiryDisplay">MM/YY</div>
+                </div>
+              </div>
+            </div>
+            <div class="credit-card-back">
+              <div class="magnetic-strip"></div>
+              <div class="signature-strip">
+                <span id="cardCvvDisplay">***</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Payment Form -->
+        <form id="paymentForm" action="/order/confirmation" method="post">
+          <div class="mb-3 position-relative">
+            <label for="cardNumber" class="form-label">Card Number</label>
+            <input type="text" class="form-control" id="cardNumber" maxlength="19" placeholder="1234 5678 9012 3456" required>
+            <div class="input-icon">
+              <i class="far fa-credit-card"></i>
+            </div>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="cardExpiry" class="form-label">Expiry Date</label>
+              <input type="text" class="form-control" id="cardExpiry" placeholder="MM/YY" maxlength="5" required>
+            </div>
+            <div class="col-md-6">
+              <label for="cardCvv" class="form-label">CVV</label>
+              <div class="position-relative">
+                <input type="text" class="form-control" id="cardCvv" placeholder="123" maxlength="3" required>
+                <div class="input-icon">
+                  <i class="far fa-question-circle" data-bs-toggle="tooltip" title="3-digit security code on the back of your card"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label for="cardName" class="form-label">Name on Card</label>
+            <input type="text" class="form-control" id="cardName" placeholder="John Smith" required>
+          </div>
+          
+          <!-- Billing Address (Collapsed by default) -->
+          <div class="mb-4">
+            <div class="form-check mb-2">
+              <input type="checkbox" id="sameBillingAddress" class="form-check-input" checked>
+              <label for="sameBillingAddress" class="form-check-label">Billing address is the same as shipping address</label>
+            </div>
+            <div id="billingAddressFields" style="display: none;">
+              <!-- Billing address fields would go here -->
+              <!-- These are hidden by default and would show if the checkbox is unchecked -->
+            </div>
+          </div>
+          
+          <!-- Order Summary -->
+          <div class="order-summary">
+            <h6 class="mb-3">Order Summary</h6>
+            <div class="summary-item">
+              <span>Subtotal (2 items)</span>
+              <span>₹899.00</span>
+            </div>
+            <div class="summary-item">
+              <span>Shipping</span>
+              <span>₹50.00</span>
+            </div>
+            <div class="summary-item">
+              <span>Tax</span>
+              <span>₹50.00</span>
+            </div>
+            <div class="summary-item grand-total">
+              <span>Total</span>
+              <span>₹999.00</span>
+            </div>
+          </div>
+          
+          <!-- Pay Button -->
+          <div class="mt-4">
+            <button type="submit" class="btn btn-pay">
+              <i class="fas fa-lock me-2"></i> Pay ₹999.00
+            </button>
+          </div>
+          
+          <!-- Security Badges -->
+          <div class="security-badges">
+            <div class="security-badge">
+              <i class="fas fa-lock"></i>
+              <span>Secure Payment</span>
+            </div>
+            <div class="security-badge">
+              <i class="fas fa-shield-alt"></i>
+              <span>Data Protection</span>
+            </div>
+            <div class="security-badge">
+              <i class="fas fa-check-circle"></i>
+              <span>SSL Encrypted</span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize tooltips
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+      
+      // Payment method selection
+      const paymentMethods = document.querySelectorAll('.payment-method');
+      paymentMethods.forEach(method => {
+        method.addEventListener('click', function() {
+          paymentMethods.forEach(m => m.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+      
+      // Credit card flip for CVV
+      const creditCard = document.getElementById('creditCard');
+      const cardCvv = document.getElementById('cardCvv');
+      
+      cardCvv.addEventListener('focus', function() {
+        creditCard.classList.add('flipped');
+      });
+      
+      cardCvv.addEventListener('blur', function() {
+        creditCard.classList.remove('flipped');
+      });
+      
+      // Format credit card number with spaces
+      const cardNumber = document.getElementById('cardNumber');
+      cardNumber.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        let formattedValue = '';
+        
+        for (let i = 0; i < value.length; i++) {
+          if (i > 0 && i % 4 === 0) {
+            formattedValue += ' ';
+          }
+          formattedValue += value[i];
+        }
+        
+        e.target.value = formattedValue;
+        document.getElementById('cardNumberDisplay').textContent = formattedValue || '•••• •••• •••• ••••';
+      });
+      
+      // Format expiry date
+      const cardExpiry = document.getElementById('cardExpiry');
+      cardExpiry.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/[^0-9]/gi, '');
+        let formattedValue = '';
+        
+        if (value.length > 0) {
+          formattedValue = value.substring(0, 2);
+          if (value.length > 2) {
+            formattedValue += '/' + value.substring(2, 4);
+          }
+        }
+        
+        e.target.value = formattedValue;
+        document.getElementById('cardExpiryDisplay').textContent = formattedValue || 'MM/YY';
+      });
+      
+      // Update card holder name
+      const cardName = document.getElementById('cardName');
+      cardName.addEventListener('input', function(e) {
+        document.getElementById('cardHolderDisplay').textContent = e.target.value || 'Your Name';
+      });
+      
+      // Update CVV display (just show asterisks)
+      cardCvv.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/[^0-9]/gi, '');
+        e.target.value = value;
+        document.getElementById('cardCvvDisplay').textContent = '•'.repeat(value.length);
+      });
+      
+      // Toggle billing address fields
+      document.getElementById('sameBillingAddress').addEventListener('change', function() {
+        document.getElementById('billingAddressFields').style.display = 
+          this.checked ? 'none' : 'block';
+      });
+      
+      // Form submission
+      document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // In a real implementation, you would validate and process the payment here
+        // For demo purposes, just redirect to confirmation page
+        window.location.href = '/order/confirmation';
+      });
+    });
+  </script>
+</body>
+</html>
