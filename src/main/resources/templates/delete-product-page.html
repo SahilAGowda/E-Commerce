@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Delete Product - Admin Only</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f4f6fa;
+        color: #333;
+      }
+
+      .delete-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      .delete-main {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+      }
+
+      .delete-main h2 {
+        margin-bottom: 20px;
+      }
+
+      .delete-search {
+        margin-bottom: 20px;
+      }
+
+      .delete-search input {
+        width: 100%;
+        max-width: 400px;
+        padding: 10px 15px;
+        border-radius: 25px;
+        border: 1px solid #ccc;
+        outline: none;
+      }
+
+      .delete-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 15px;
+      }
+
+      .delete-table th {
+        background-color: #e5e7eb;
+        padding: 15px;
+        margin-left: 5px;
+        text-align: left;
+        border-radius: 10px 10px 0 0;
+      }
+
+      .delete-table td {
+        padding: 15px;
+        vertical-align: middle;
+      }
+
+      .delete-table tr {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .delete-table tbody tr:nth-child(1) {
+        background-color: #9ba868;
+      }
+
+      .delete-table tbody tr:nth-child(2) {
+        background-color: #728b5b;
+      }
+
+      .delete-table td img {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 5px;
+      }
+
+      .delete-action-btn {
+        background-color: #485a5b;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .delete-action-btn:hover {
+        background-color: #485a5b;
+      }
+
+      .delete-selected-btn {
+        margin-top: 20px;
+        background-color: #485a5b;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .delete-selected-btn:hover {
+        background-color: #dc2626;
+      }
+
+      /* Modal styles */
+      .delete-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+      }
+
+      .delete-modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        width: 300px;
+        text-align: center;
+      }
+
+      .delete-modal-content h3 {
+        margin-bottom: 20px;
+      }
+
+      .delete-modal-buttons button {
+        padding: 10px 20px;
+        margin: 10px 5px 0 5px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .delete-confirm {
+        background-color: #dc2626;
+        color: white;
+      }
+
+      .delete-cancel {
+        background-color: #ccc;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="delete-container">
+      <div class="delete-main">
+        <h2>Delete Product</h2>
+
+        <div class="delete-search">
+          <input type="text" placeholder="Search by product name or ID..." />
+        </div>
+
+        <table class="delete-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" /></th>
+              <th>Image</th>
+              <th>Product Name</th>
+              <th>Price</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox" /></td>
+              <td>
+                <img src="https://via.placeholder.com/40" alt="Product Image" />
+              </td>
+              <td>iPhone 14</td>
+              <td>$999</td>
+              <td>
+                <button class="delete-action-btn" onclick="openDeleteModal()">
+                  Delete
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" /></td>
+              <td>
+                <img src="https://via.placeholder.com/40" alt="Product Image" />
+              </td>
+              <td>Adidas Ultraboost</td>
+              <td>$180</td>
+              <td>
+                <button class="delete-action-btn" onclick="openDeleteModal()">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <button class="delete-selected-btn" onclick="openDeleteModal()">
+          Delete Selected
+        </button>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="delete-modal" id="deleteModal">
+      <div class="delete-modal-content">
+        <h3>Confirm Deletion</h3>
+        <p>Are you sure you want to delete this product?</p>
+        <div class="delete-modal-buttons">
+          <button class="delete-confirm" onclick="confirmDelete()">Yes</button>
+          <button class="delete-cancel" onclick="closeDeleteModal()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openDeleteModal() {
+        document.getElementById("deleteModal").style.display = "flex";
+      }
+
+      function closeDeleteModal() {
+        document.getElementById("deleteModal").style.display = "none";
+      }
+
+      function confirmDelete() {
+        closeDeleteModal();
+        alert("Product deleted (sample action)");
+      }
+    </script>
+  </body>
+</html>

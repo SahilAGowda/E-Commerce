@@ -1,412 +1,799 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Vanta</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <style>
+      :root {
+        /* Light mode colors */
+        --bg-primary: #f8fafc;
+        --bg-secondary: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #475569;
+        --accent-primary: #16ac50;
+        --accent-hover: #15753a;
+        --border: #e2e8f0;
+        --card-shadow: rgba(0, 0, 0, 0.05);
+        --sidebar-bg: #2d3748;
+        --sidebar-text: #e2e8f0;
+        --sidebar-hover: #334155;
+        --success: #22c55e;
+        --warning: #eab308;
+        --error: #ef4444;
+        --success-bg: #dcfce7;
+        --warning-bg: #fef3c7;
+        --error-bg: #fee2e2;
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: rgb(223, 219, 219);
-      color: black;
-    }
+      /* Dark mode overrides */
+      [data-theme="dark"] {
+        --bg-primary: #1f2a44;
+        --bg-secondary: #2d3748;
+        --text-primary: #e2e8f0;
+        --text-secondary: #94a3b8;
+        --accent-primary: #15753a;
+        --accent-hover: #15753a;
+        --border: #4b5563;
+        --card-shadow: rgba(0, 0, 0, 0.2);
+        --sidebar-bg: #2d3748;
+        --sidebar-text: #d1d5db;
+        --sidebar-hover: #1f2a44;
+        --success: #4ade80;
+        --warning: #facc15;
+        --error: #f87171;
+        --success-bg: #166534;
+        --warning-bg: #854d0e;
+        --error-bg: #991b1b;
+      }
 
-    .container {
-      display: flex;
-    }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    .sidebar {
-      width: 250px;
-      background: linear-gradient(to bottom, #0f47e0, #4b67af);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      padding-top: 20px;
-    }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        transition: background 0.3s ease, color 0.3s ease;
+      }
 
-    .sidebar button {
-      margin-top: 40px;
-      background: none;
-      border: none;
-      color: white;
-      padding: 10px 20px;
-      text-align: left;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+      .container {
+        display: flex;
+        min-height: 100vh;
+      }
 
-    .sidebar button:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
+      /* Sidebar */
+      .sidebar {
+        width: 250px;
+        background: var(--sidebar-bg);
+        color: var(--sidebar-text);
+        padding: 20px;
+        position: fixed;
+        height: 100%;
+        transition: transform 0.3s ease;
+      }
 
-    .main {
-      flex-grow: 1;
-      padding: 20px;
-      margin-left: 20%;
-    }
+      .sidebar.collapsed {
+        transform: translateX(-100%);
+      }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
+      .sidebar h3 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: var(--sidebar-text);
+      }
 
-    .topbar input[type="search"] {
-      padding: 10px 15px;
-      border-radius: 25px;
-      border: none;
-      background-color: white;
-      color: rgb(0, 0, 0);
-      outline: none;
-      font-size: 14px;
-      width: 250px;
-    }
+      .sidebar a {
+        color: var(--sidebar-text);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        font-size: 1rem;
+      }
 
-    .topbar input[type="search"]::placeholder {
-      color: #888;
-    }
+      .sidebar a i {
+        margin-right: 10px;
+      }
 
-    .cards {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
+      .sidebar a:hover,
+      .sidebar a.active {
+        background: var(--sidebar-hover);
+      }
 
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      flex: 1;
-      min-width: 200px;
-    }
+      .sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: var(--sidebar-bg);
+        color: var(--sidebar-text);
+        border: none;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        z-index: 1000;
+      }
 
-    .chart-box {
-      background: white;
-      margin-top: 20px;
-      padding: 20px;
-      border-radius: 10px;
-      width: 100%;
-      box-sizing: border-box;
-    }
+      /* Main Content */
+      .main {
+        margin-left: 250px;
+        flex: 1;
+        padding: 40px;
+        transition: margin-left 0.3s ease;
+      }
 
-    #salesChart {
-      background: white;
-      margin-top: 0px;
-      padding: 20px;
-      border-radius: 10px;
-    }
+      .main.full-width {
+        margin-left: 0;
+      }
 
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
 
-    .bar-container {
-      display: flex;
-      align-items: flex-end;
-      gap: 10px;
-      height: 300px;
-      width: 100%;
-    }
+      .topbar h2 {
+        font-size: 2rem;
+        color: var(--text-primary);
+      }
 
-    .bar {
-      flex: 1;
-      background: linear-gradient(to top, #2a5de800, #2a5de8);
-      border-radius: 5px 5px 0 0;
-    }
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
 
-    .nextsection {
-      margin-bottom: 30px;
-      margin-top: 20px;
-    }
+      .topbar input[type="search"] {
+        padding: 10px 15px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        width: 250px;
+        outline: none;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #ffffff;
-      border-radius: 10px;
-      overflow: hidden;
-    }
+      .topbar input[type="search"]:focus {
+        border-color: var(--accent-primary);
+      }
 
-    th,
-    td {
-      padding: 15px;
-      text-align: left;
-      border-bottom: 1px solid #2e2e3e;
-    }
+      .user-dropdown {
+        position: relative;
+      }
 
-    th {
-      background-color: #ffffff;
-    }
+      .user-dropdown button {
+        background: var(--border);
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-primary);
+      }
 
-    .status-approved {
-      color: #00c853;
-      background: rgba(0, 200, 83, 0.1);
-      padding: 5px 10px;
-      border-radius: 5px;
-    }
+      .dark-mode-toggle {
+        background: var(--border);
+        border: none;
+        padding: 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        color: var(--text-primary);
+      }
 
-    .status-pending {
-      color: #ffa000;
-      background: rgba(255, 160, 0, 0.1);
-      padding: 5px 10px;
-      border-radius: 5px;
-    }
+      /* Cards */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
 
-    .status-rejected {
-      color: #d50000;
-      background: rgba(213, 0, 0, 0.1);
-      padding: 5px 10px;
-      border-radius: 5px;
-    }
+      .card {
+        background: var(--bg-secondary);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px var(--card-shadow);
+        transition: transform 0.2s, background 0.3s ease;
+      }
 
-    .cards {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
+      .card:hover {
+        transform: translateY(-3px);
+      }
 
-    .card {
-      flex: 1;
-      border-radius: 10px;
-      padding: 20px;
-    }
+      .card h3 {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+      }
 
-    .cardlast {
-      flex: 1;
-      border-radius: 10px;
-      padding: 20px;
-      background: white;
-      padding: 20px;
-      top: 20px;
-      border-radius: 10px;
-      min-width: 200px;
-    }
+      .card p {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
 
-    .todo-list li {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 10px 0;
-    }
+      .card small {
+        color: var(--text-secondary);
+      }
 
-    .todo-list input[type="checkbox"] {
-      margin-right: 10px;
-    }
+      .card .trend-up {
+        color: var(--success);
+      }
 
-    .chart {
-      height: 300px;
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 20px;
-    }
+      .card .trend-down {
+        color: var(--error);
+      }
 
-    .donut {
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      background: conic-gradient(#2a5de8 0% 40%, rgba(164, 161, 161, 0.611) 40% 100%);
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 24px;
-      font-weight: bold;
-    }
-  </style>
-</head>
+      /* Chart Box */
+      .chart-box {
+        background: var(--bg-secondary);
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        transition: background 0.3s ease;
+      }
 
-<body>
-  <div class="container">
-    <div class="sidebar">
-      <button>Dashboard</button>
-      <button>Add Product</button>
-      <button>Edit Product</button>
-      <button>Delete Product</button>
-      <button>Manage Orders</button>
-      <button>Manage Orders</button>
-    </div>
-    <div class="main">
-      <div class="topbar">
-        <h2>Vanta Admin</h2>
-        <div>
-          <input type="search" placeholder="Search anything..." />
-        </div>
+      .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .chart-header h3 {
+        font-size: 1.5rem;
+        color: var(--text-primary);
+      }
+
+      .chart-header select {
+        padding: 8px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 1rem;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      /* Orders Table */
+      .orders-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: background 0.3s ease;
+      }
+
+      .orders-table th {
+        background: var(--border);
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      .orders-table td {
+        padding: 15px;
+        background: var(--bg-secondary);
+        vertical-align: middle;
+      }
+
+      .orders-table tr {
+        transition: background 0.2s;
+      }
+
+      .orders-table tr:hover {
+        background: var(--sidebar-hover);
+      }
+
+      .status {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+      }
+
+      .status-approved {
+        background: var(--success-bg);
+        color: var(--success);
+      }
+
+      .status-pending {
+        background: var(--warning-bg);
+        color: var(--warning);
+      }
+
+      .status-rejected {
+        background: var(--error-bg);
+        color: var(--error);
+      }
+
+      /* Todo Section */
+      .todo-card {
+        background: var(--bg-secondary);
+        padding: 20px;
+        border-radius: 12px;
+        transition: background 0.3s ease;
+      }
+
+      .todo-card input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        margin-bottom: 15px;
+        outline: none;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      .todo-card input[type="text"]:focus {
+        border-color: var(--accent-primary);
+      }
+
+      .todo-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .todo-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .todo-list li:last-child {
+        border-bottom: none;
+      }
+
+      .todo-list input[type="checkbox"] {
+        margin-right: 10px;
+      }
+
+      .todo-list .delete-todo {
+        background: var(--error);
+        color: #ffffff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--success);
+        color: #ffffff;
+        padding: 15px 20px;
+        border-radius: 8px;
+        display: none;
+        z-index: 2000;
+        animation: slideUp 0.3s ease;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(50px);
+          opacity: 0;
+        }
+
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.collapsed {
+          transform: translateX(0);
+        }
+
+        .main {
+          margin-left: 0;
+        }
+
+        .main.full-width {
+          margin-left: 250px;
+        }
+
+        .sidebar-toggle {
+          display: block;
+        }
+
+        .topbar input[type="search"] {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+        }
+
+        .topbar-right {
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+    </style>
+  </head>
+
+  <body data-theme="light">
+    <div class="container">
+      <!-- Sidebar -->
+      <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
+      <div class="sidebar">
+        <h3>Vanta Admin</h3>
+        <a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="#"><i class="fas fa-plus"></i> Add Product</a>
+        <a href="#"><i class="fas fa-edit"></i> Edit Product</a>
+        <a href="#"><i class="fas fa-trash"></i> Delete Product</a>
+        <a href="#"><i class="fas fa-box"></i> Manage Orders</a>
+        <a href="#"><i class="fas fa-cog"></i> Settings</a>
       </div>
-      <div class="cards">
-        <div class="card">
-          <h3>Orders</h3>
-          <p>$8753.00</p>
-          <small>18.33% Since last month</small>
+
+      <!-- Main Content -->
+      <div class="main">
+        <div class="topbar">
+          <h2>Dashboard</h2>
+          <div class="topbar-right">
+            <input
+              type="search"
+              id="searchInput"
+              placeholder="Search orders..."
+            />
+            <div class="user-dropdown">
+              <button><i class="fas fa-user"></i> Admin</button>
+            </div>
+            <button class="dark-mode-toggle" id="darkModeToggle">
+              <i class="fas fa-moon"></i>
+            </button>
+          </div>
         </div>
-        <div class="card">
-          <h3>Sales</h3>
-          <p>$8753.00</p>
-          <small>18.33% Since last month</small>
+
+        <!-- Cards -->
+        <div class="cards">
+          <div class="card">
+            <h3>Orders</h3>
+            <p>$8,753</p>
+            <small><span class="trend-up">18.33%</span> Since last month</small>
+          </div>
+          <div class="card">
+            <h3>Sales</h3>
+            <p>$12,450</p>
+            <small><span class="trend-up">10.5%</span> Since last month</small>
+          </div>
+          <div class="card">
+            <h3>Revenue</h3>
+            <p>$20,300</p>
+            <small><span class="trend-down">5.2%</span> Since last month</small>
+          </div>
+          <div class="card">
+            <h3>Cost</h3>
+            <p>$7,890</p>
+            <small><span class="trend-up">2.8%</span> Since last month</small>
+          </div>
         </div>
-        <div class="card">
-          <h3>Revenue</h3>
-          <p>$8753.00</p>
-          <small>18.33% Since last month</small>
+
+        <!-- Orders Chart -->
+        <div class="chart-box">
+          <div class="chart-header">
+            <h3>Orders Overview</h3>
+            <select id="chartFilter">
+              <option>Month</option>
+              <option>Week</option>
+              <option>Year</option>
+            </select>
+          </div>
+          <canvas id="ordersChart"></canvas>
         </div>
-        <div class="card">
-          <h3>Cost</h3>
-          <p>$8753.00</p>
-          <small>18.33% Since last month</small>
+
+        <!-- Orders Table -->
+        <div class="chart-box">
+          <div class="chart-header">
+            <h3>Recent Orders</h3>
+            <div>
+              <select id="statusFilter">
+                <option value="">All Status</option>
+                <option value="Approved">Approved</option>
+                <option value="Pending">Pending</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+              <button
+                style="
+                  background: var(--accent-primary);
+                  color: white;
+                  padding: 8px 16px;
+                  border: none;
+                  border-radius: 6px;
+                  margin-left: 10px;
+                "
+              >
+                Export CSV
+              </button>
+            </div>
+          </div>
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Assignee</th>
+                <th>Task Details</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+                <th>Amount</th>
+                <th>Tracking Number</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTable">
+              <tr>
+                <td>#320</td>
+                <td>Mark C. Diaz</td>
+                <td>Support of theme</td>
+                <td>Credit Card</td>
+                <td><span class="status status-approved">Approved</span></td>
+                <td>$12,245</td>
+                <td>JPBBN435893458</td>
+              </tr>
+              <tr>
+                <td>#321</td>
+                <td>Jose D</td>
+                <td>Verify your email address</td>
+                <td>Internet Banking</td>
+                <td><span class="status status-pending">Pending</span></td>
+                <td>$12,245</td>
+                <td>BDYBN435893325</td>
+              </tr>
+              <tr>
+                <td>#322</td>
+                <td>Philips T</td>
+                <td>Item support message send</td>
+                <td>Credit Card</td>
+                <td><span class="status status-approved">Approved</span></td>
+                <td>$12,245</td>
+                <td>JSNTN435884258</td>
+              </tr>
+              <tr>
+                <td>#323</td>
+                <td>Luke Pixel</td>
+                <td>New submission on website</td>
+                <td>Cash on Delivery</td>
+                <td><span class="status status-rejected">Rejected</span></td>
+                <td>$12,245</td>
+                <td>JPABT435893678</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-header">
-          <h3>Orders</h3>
-          <button
-            style="background-color: #2a5de8; border: none; color: white; padding: 5px 10px; border-radius: 5px;">Month</button>
-        </div>
-        <div class="bar-container">
-          <div class="bar" style="height: 100px;"></div>
-          <div class="bar" style="height: 180px;"></div>
-          <div class="bar" style="height: 90px;"></div>
-          <div class="bar" style="height: 200px;"></div>
-          <div class="bar" style="height: 150px;"></div>
-          <div class="bar" style="height: 70px;"></div>
-          <div class="bar" style="height: 220px;"></div>
-          <div class="bar" style="height: 160px;"></div>
-        </div>
-      </div>
-      <div class="nextsection">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Assignee</th>
-              <th>Task Details</th>
-              <th>Payment Method</th>
-              <th>Payment Status</th>
-              <th>Amount</th>
-              <th>Tracking Number</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>#320</td>
-              <td>Mark C.Diaz</td>
-              <td>Support of theme</td>
-              <td>Credit card</td>
-              <td><span class="status-approved">Approved</span></td>
-              <td>$12,245</td>
-              <td>JPBBN435893458</td>
-            </tr>
-            <tr>
-              <td>#321</td>
-              <td>Jose D</td>
-              <td>Verify your email address !</td>
-              <td>Internet banking</td>
-              <td><span class="status-pending">Pending</span></td>
-              <td>$12,245</td>
-              <td>BDYBN435893325</td>
-            </tr>
-            <tr>
-              <td>#322</td>
-              <td>Philips T</td>
-              <td>Item support message send</td>
-              <td>Credit card</td>
-              <td><span class="status-approved">Approved</span></td>
-              <td>$12,245</td>
-              <td>JSNTN435884258</td>
-            </tr>
-            <tr>
-              <td>#323</td>
-              <td>Luke Pixel</td>
-              <td>New submission on website</td>
-              <td>Cash on delivery</td>
-              <td><span class="status-rejected">Rejected</span></td>
-              <td>$12,245</td>
-              <td>JPABT435893678</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="cards">
-        <div class="card">
-          <h3>Traffic Source</h3>
-          <div class="donut">12 M</div>
-          <p style="text-align:center;">Traffic through Google and Facebook for the day</p>
-          <p style="text-align:center;">Facebook - 40% | Google - 60%</p>
-        </div>
-        <div class="card">
-          <h3>Todo</h3>
-          <input type="text" placeholder="What do you need to do today?"
-            style="width:100%;padding:10px;margin-bottom:10px;border-radius:5px;border:none;background:#ffffff;color:black;" />
-          <ul class="todo-list" style="list-style:none;padding:0;">
-            <li><label><input type="checkbox" /> Pick up kids from school</label> ❌</li>
-            <li><label><input type="checkbox" checked /> Prepare for presentation</label> ✅</li>
-            <li><label><input type="checkbox" /> Print Statements</label> ❌</li>
-            <li><label><input type="checkbox" /> Create invoice</label> ❌</li>
-            <li><label><input type="checkbox" checked /> Call John</label> ✅</li>
-            <li><label><input type="checkbox" /> Meeting with Alisa</label> ❌</li>
-          </ul>
-        </div>
-        <div class="cardlast">
-          <h3>Daily Sales</h3>
-          <p>1000              |            800</p>
-          <p> online                            store</p>
-          <div class="chart">
-            <!-- Placeholder for line chart -->
-            <canvas id="salesChart" width="450px" height="450px"></canvas>
+
+        <!-- Traffic and Todo -->
+        <div class="cards">
+          <div class="card">
+            <h3>Traffic Source</h3>
+            <canvas id="trafficChart"></canvas>
+            <p style="text-align: center; margin-top: 10px">
+              Facebook - 40% | Google - 60%
+            </p>
+          </div>
+          <div class="todo-card">
+            <h3>Todo</h3>
+            <form id="todoForm">
+              <input
+                type="text"
+                id="todoInput"
+                placeholder="Add a new task..."
+                required
+              />
+            </form>
+            <ul class="todo-list" id="todoList">
+              <li>
+                <label
+                  ><input type="checkbox" /> Pick up kids from school</label
+                >
+                <button class="delete-todo">Delete</button>
+              </li>
+              <li>
+                <label
+                  ><input type="checkbox" checked /> Prepare for
+                  presentation</label
+                >
+                <button class="delete-todo">Delete</button>
+              </li>
+              <li>
+                <label><input type="checkbox" /> Print Statements</label>
+                <button class="delete-todo">Delete</button>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    const ctx = document.getElementById('salesChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            label: 'Online',
-            data: [1000, 1600, 1400, 1300, 2200, 1700],
-            borderColor: '#ff6f91',
-            fill: false,
-            tension: 0.3
-          },
-          {
-            label: 'Store',
-            data: [800, 900, 700, 1100, 1500, 1800],
-            borderColor: '#6a93ff',
-            fill: false,
-            tension: 0.3
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Sidebar Toggle
+      const sidebar = document.querySelector(".sidebar");
+      const main = document.querySelector(".main");
+      document
+        .querySelector(".sidebar-toggle")
+        .addEventListener("click", () => {
+          sidebar.classList.toggle("collapsed");
+          main.classList.toggle("full-width");
+        });
+
+      // Dark Mode Toggle
+      document
+        .getElementById("darkModeToggle")
+        .addEventListener("click", () => {
+          const isDark = document.body.getAttribute("data-theme") === "dark";
+          document.body.setAttribute("data-theme", isDark ? "light" : "dark");
+          const purus = document.querySelector("#darkModeToggle i");
+          purus.className = isDark ? "fas fa-moon" : "fas fa-sun";
+        });
+
+      // Orders Chart
+      const ordersChart = new Chart(document.getElementById("ordersChart"), {
+        type: "bar",
+        data: {
+          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+          datasets: [
+            {
+              label: "Orders",
+              data: [100, 180, 90, 200, 150, 70, 220, 160],
+              backgroundColor: getComputedStyle(document.documentElement)
+                .getPropertyValue("--accent-primary")
+                .trim(),
+              borderRadius: 5,
+            },
+          ],
         },
-        plugins: {
-          legend: {
-            labels: {
-              color: 'white'
-            }
-          }
-        }
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true },
+          },
+          plugins: {
+            legend: { display: false },
+          },
+        },
+      });
+
+      // Traffic Chart
+      const trafficChart = new Chart(document.getElementById("trafficChart"), {
+        type: "pie",
+        data: {
+          labels: ["Google", "Facebook"],
+          datasets: [
+            {
+              data: [60, 40],
+              backgroundColor: [
+                getComputedStyle(document.documentElement)
+                  .getPropertyValue("--accent-primary")
+                  .trim(),
+                getComputedStyle(document.documentElement)
+                  .getPropertyValue("--accent-hover")
+                  .trim(),
+              ],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "bottom" },
+          },
+        },
+      });
+
+      // Search and Filter
+      const searchInput = document.getElementById("searchInput");
+      const statusFilter = document.getElementById("statusFilter");
+      const ordersTable = document.getElementById("ordersTable");
+
+      function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const status = statusFilter.value;
+        const rows = ordersTable.querySelectorAll("tr");
+
+        rows.forEach((row) => {
+          const id = row
+            .querySelector("td:nth-child(1)")
+            .textContent.toLowerCase();
+          const assignee = row
+            .querySelector("td:nth-child(2)")
+            .textContent.toLowerCase();
+          const task = row
+            .querySelector("td:nth-child(3)")
+            .textContent.toLowerCase();
+          const rowStatus = row.querySelector(
+            "td:nth-child(5) span"
+          ).textContent;
+
+          const matchesSearch =
+            id.includes(searchTerm) ||
+            assignee.includes(searchTerm) ||
+            task.includes(searchTerm);
+          const matchesStatus = !status || rowStatus === status;
+
+          row.style.display = matchesSearch && matchesStatus ? "" : "none";
+        });
       }
-    });
-  </script>
 
-</body>
+      searchInput.addEventListener("input", filterTable);
+      statusFilter.addEventListener("change", filterTable);
 
+      // Todo List
+      const todoForm = document.getElementById("todoForm");
+      const todoInput = document.getElementById("todoInput");
+      const todoList = document.getElementById("todoList");
+
+      todoForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const task = todoInput.value.trim();
+        if (task) {
+          const li = document.createElement("li");
+          li.innerHTML = `
+                    <label><input type="checkbox"> ${task}</label>
+                    <button class="delete-todo">Delete</button>
+                `;
+          todoList.appendChild(li);
+          todoInput.value = "";
+          showToast("Task added!", "success");
+        }
+      });
+
+      todoList.addEventListener("click", (e) => {
+        if (e.target.classList.contains("delete-todo")) {
+          e.target.parentElement.remove();
+          showToast("Task deleted!", "success");
+        }
+      });
+
+      // Toast Notification
+      function showToast(message, type) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+        toast.style.display = "block";
+        setTimeout(() => {
+          toast.style.display = "none";
+        }, 3000);
+      }
+    </script>
+  </body>
 </html>
