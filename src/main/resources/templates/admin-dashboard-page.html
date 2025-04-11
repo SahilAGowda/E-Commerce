@@ -452,7 +452,6 @@
 
   <body data-theme="light">
     <div class="container">
-      <!-- Sidebar -->
       <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
       <div class="sidebar">
         <h3>Vanta Admin</h3>
@@ -464,7 +463,6 @@
         <a href="#"><i class="fas fa-cog"></i> Settings</a>
       </div>
 
-      <!-- Main Content -->
       <div class="main">
         <div class="topbar">
           <h2>Dashboard</h2>
@@ -483,7 +481,6 @@
           </div>
         </div>
 
-        <!-- Cards -->
         <div class="cards">
           <div class="card">
             <h3>Orders</h3>
@@ -507,7 +504,6 @@
           </div>
         </div>
 
-        <!-- Orders Chart -->
         <div class="chart-box">
           <div class="chart-header">
             <h3>Orders Overview</h3>
@@ -520,7 +516,6 @@
           <canvas id="ordersChart"></canvas>
         </div>
 
-        <!-- Orders Table -->
         <div class="chart-box">
           <div class="chart-header">
             <h3>Recent Orders</h3>
@@ -598,7 +593,6 @@
           </table>
         </div>
 
-        <!-- Traffic and Todo -->
         <div class="cards">
           <div class="card">
             <h3>Traffic Source</h3>
@@ -641,12 +635,10 @@
       </div>
     </div>
 
-    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-      // Sidebar Toggle
       const sidebar = document.querySelector(".sidebar");
       const main = document.querySelector(".main");
       document
@@ -656,7 +648,6 @@
           main.classList.toggle("full-width");
         });
 
-      // Dark Mode Toggle
       document
         .getElementById("darkModeToggle")
         .addEventListener("click", () => {
@@ -666,7 +657,6 @@
           purus.className = isDark ? "fas fa-moon" : "fas fa-sun";
         });
 
-      // Orders Chart
       const ordersChart = new Chart(document.getElementById("ordersChart"), {
         type: "bar",
         data: {
@@ -693,7 +683,6 @@
         },
       });
 
-      // Traffic Chart
       const trafficChart = new Chart(document.getElementById("trafficChart"), {
         type: "pie",
         data: {
@@ -720,7 +709,6 @@
         },
       });
 
-      // Search and Filter
       const searchInput = document.getElementById("searchInput");
       const statusFilter = document.getElementById("statusFilter");
       const ordersTable = document.getElementById("ordersTable");
@@ -757,7 +745,6 @@
       searchInput.addEventListener("input", filterTable);
       statusFilter.addEventListener("change", filterTable);
 
-      // Todo List
       const todoForm = document.getElementById("todoForm");
       const todoInput = document.getElementById("todoInput");
       const todoList = document.getElementById("todoList");
@@ -784,7 +771,6 @@
         }
       });
 
-      // Toast Notification
       function showToast(message, type) {
         const toast = document.getElementById("toast");
         toast.textContent = message;
