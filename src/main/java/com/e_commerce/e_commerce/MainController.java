@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -27,9 +28,25 @@ public class MainController {
 
     // 1. Authentication & User Pages
 
+    @GetMapping("/register")
+    public String registerRedirect() {
+        return "redirect:/user-register";
+    }
+
     @GetMapping("/user-register")
     public String userRegisterPage() {
         return "user-register-page.html";
+    }
+
+    @GetMapping("/login")
+    public String loginRedirect() {
+        return "redirect:/user-login";
+    }
+
+    @PostMapping("/login")
+    public String processLogin() {
+        // Actual login processing would go here
+        return "redirect:/user-dashboard";
     }
 
     @GetMapping("/user-login")
@@ -64,6 +81,11 @@ public class MainController {
         List<Product> featuredProducts = productService.getActiveProducts();
         model.addAttribute("featuredProducts", featuredProducts);
         return "main-page.html";
+    }
+
+    @GetMapping("/products")
+    public String productsRedirect() {
+        return "redirect:/product-list";
     }
 
     @GetMapping("/product-list")
@@ -130,11 +152,9 @@ public class MainController {
         // Get statistics for admin dashboard
         List<Product> products = productService.getAllProducts();
         List<User> users = userService.getAllUsers();
-        
         model.addAttribute("totalProducts", products.size());
         model.addAttribute("totalUsers", users.size());
         model.addAttribute("recentProducts", products.subList(0, Math.min(5, products.size())));
-        
         return "admin-dashboard-page.html";
     }
 
