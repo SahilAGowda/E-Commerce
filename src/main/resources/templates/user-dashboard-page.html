@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyShop | Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+        }
+
+        .dashboard-container {
+            padding: 2rem;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #3a86ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .profile-info p {
+            margin: 0;
+            color: #666;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            color: #3a86ff;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card h3 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: #333;
+        }
+
+        .stat-card p {
+            margin: 0;
+            color: #666;
+        }
+
+        .orders-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .orders-table {
+            width: 100%;
+        }
+
+        .orders-table th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .orders-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .btn-edit-profile {
+            background: #3a86ff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit-profile:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <span th:text="${#strings.substring(user.firstName, 0, 1)}">J</span>
+                </div>
+                <div class="profile-info">
+                    <h2 th:text="${user.firstName + ' ' + user.lastName}">John Doe</h2>
+                    <p th:text="${user.email}">john@example.com</p>
+                    <button class="btn btn-edit-profile mt-2">Edit Profile</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <i class='bx bx-shopping-bag'></i>
+                <h3 th:text="${#lists.size(orders)}">0</h3>
+                <p>Total Orders</p>
+            </div>
+            <div class="stat-card">
+                <i class='bx bx-cart'></i>
+                <h3 th:text="${activeOrders}">0</h3>
+                <p>Active Orders</p>
+            </div>
+            <div class="stat-card">
+                <i class='bx bx-dollar-circle'></i>
+                <h3 th:text="${'$' + totalSpent}">$0</h3>
+                <p>Total Spent</p>
+            </div>
+        </div>
+
+        <div class="orders-card">
+            <div class="orders-header">
+                <h3>Recent Orders</h3>
+                <button class="btn btn-outline-primary">View All</button>
+            </div>
+            <div class="table-responsive">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td th:text="${'#' + order.id}"></td>
+                            <td th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy')}"></td>
+                            <td th:text="${'$' + order.totalAmount}"></td>
+                            <td>
+                                <span class="status-badge" 
+                                      th:classappend="${'status-' + #strings.toLowerCase(order.status)}"
+                                      th:text="${order.status}"></span>
+                            </td>
+                            <td>
+                                <a th:href="@{'/order-details/' + ${order.id}}" class="btn btn-sm btn-outline-primary">View</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Get user data from localStorage (set during login)
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            window.location.href = '/user-login';
+        }
+
+        // Fetch user's orders
+        fetch('/api/orders/user/' + user.id)
+            .then(response => response.json())
+            .then(orders => {
+                // Update stats
+                const activeOrders = orders.filter(order => 
+                    ['PENDING', 'PAID', 'SHIPPED'].includes(order.status)
+                ).length;
+                
+                const totalSpent = orders
+                    .filter(order => order.status !== 'CANCELLED')
+                    .reduce((sum, order) => sum + order.totalAmount, 0);
+
+                // Update UI with the fetched data
+                document.querySelector('.profile-info h2').textContent = user.firstName + ' ' + user.lastName;
+                document.querySelector('.profile-info p').textContent = user.email;
+                document.querySelector('.profile-avatar span').textContent = user.firstName.charAt(0);
+                
+                // Update stats
+                document.querySelectorAll('.stat-card h3')[0].textContent = orders.length;
+                document.querySelectorAll('.stat-card h3')[1].textContent = activeOrders;
+                document.querySelectorAll('.stat-card h3')[2].textContent = '$' + totalSpent.toFixed(2);
+            })
+            .catch(error => {
+                console.error('Error fetching orders:', error);
+            });
+
+        // Handle profile edit button
+        document.querySelector('.btn-edit-profile').addEventListener('click', function() {
+            // Implement profile edit functionality
+            alert('Profile edit functionality will be implemented soon.');
+        });
+    </script>
+</body>
+</html>

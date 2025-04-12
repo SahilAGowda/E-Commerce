@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Cart | MyShop</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -99,25 +99,12 @@
     /* Cart Container */
     .cart-container {
       background-color: white;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
       padding: 30px;
       margin-bottom: 30px;
-      position: relative;
-      overflow: hidden;
     }
     
-    .cart-container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(to right, #3a86ff, #ff006e);
-    }
-    
-    /* Product Row */
     .product-row {
       display: flex;
       align-items: center;
@@ -127,12 +114,7 @@
     }
     
     .product-row:hover {
-      background-color: #f9fbff;
-      transform: translateY(-2px);
-    }
-    
-    .product-row:last-child {
-      border-bottom: none;
+      background-color: var(--light);
     }
     
     .product-image {
@@ -140,12 +122,6 @@
       height: 100px;
       border-radius: 10px;
       object-fit: cover;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
-    }
-    
-    .product-row:hover .product-image {
-      transform: scale(1.05);
     }
     
     .product-name {
@@ -154,17 +130,11 @@
       margin-bottom: 5px;
     }
     
-    .product-category {
-      color: #6c757d;
-      font-size: 0.9rem;
-    }
-    
     .product-price {
       font-weight: 600;
       color: var(--accent);
     }
     
-    /* Quantity Controller */
     .quantity-controller {
       display: flex;
       align-items: center;
@@ -174,7 +144,7 @@
     }
     
     .quantity-btn {
-      background-color: #f8f9fa;
+      background-color: var(--light);
       border: none;
       width: 36px;
       height: 36px;
@@ -197,16 +167,12 @@
       background: transparent;
     }
     
-    .quantity-input:focus {
-      outline: none;
-    }
-    
     .remove-btn {
       width: 36px;
       height: 36px;
       border-radius: 50%;
       background-color: #fff5f7;
-      color: #ff006e;
+      color: var(--secondary);
       border: none;
       display: flex;
       align-items: center;
@@ -216,31 +182,31 @@
     }
     
     .remove-btn:hover {
-      background-color: #ff006e;
+      background-color: var(--secondary);
       color: white;
-      transform: rotate(90deg);
+    }
+    
+    .summary-box {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      padding: 30px;
+      position: sticky;
+      top: 20px;
+    }
+    
+    .empty-cart {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    .empty-cart i {
+      font-size: 4rem;
+      color: #dee2e6;
+      margin-bottom: 1rem;
     }
     
     /* Summary Box */
-    .summary-box {
-      background-color: white;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      padding: 30px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .summary-box::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(to right, #3a86ff, #ff006e);
-    }
-    
     .summary-title {
       font-weight: 700;
       color: var(--dark);
@@ -436,60 +402,66 @@
 </div>
 
 <!-- With Items -->
-<div class="container fadeIn" th:if="${cartItems != null && cartItems.size() > 0}">
+<div class="container py-5">
   <div class="row">
-    <!-- Cart Items -->
+    <!-- Main Cart Content -->
     <div class="col-lg-8">
       <div class="cart-container">
-        <h5 class="mb-4"><i class="bi bi-cart3 me-2"></i>Your Items</h5>
+        <h2 class="mb-4">Shopping Cart</h2>
         
-        <!-- Product Row -->
-        <div class="product-row" th:each="item : ${cartItems}">
-          <div class="d-flex align-items-center flex-grow-1">
-            <img th:src="@{${item.product.imageUrl}}" src="/api/placeholder/150/150" alt="Product" class="product-image me-4">
-            
-            <div class="product-details flex-grow-1">
-              <h5 class="product-name" th:text="${item.product.name}">Premium Wireless Earbuds</h5>
-              <p class="product-category mb-0" th:if="${item.product.category != null}" th:text="${item.product.category}">Electronics</p>
-            </div>
-          </div>
-          
-          <div class="product-price me-4">
-            <h6 class="mb-0">Price</h6>
-            <div class="text-accent">₹<span th:text="${item.product.price}">1,999</span></div>
-          </div>
-          
-          <div class="product-quantity me-4">
-            <h6 class="mb-0">Quantity</h6>
-            <form th:action="@{/cart/update}" method="post" class="d-flex mt-1">
-              <input type="hidden" name="productId" th:value="${item.product.id}" value="1">
-              <div class="quantity-controller">
-                <button type="button" class="quantity-btn decrement">
-                  <i class="bi bi-dash"></i>
-                </button>
-                <input type="number" class="quantity-input" name="quantity" th:value="${item.quantity}" value="1" min="1">
-                <button type="button" class="quantity-btn increment">
-                  <i class="bi bi-plus"></i>
-                </button>
+        <!-- Empty Cart Message -->
+        <div th:if="${#lists.isEmpty(cartItems)}" class="empty-cart">
+          <i class="bi bi-cart-x"></i>
+          <h3>Your cart is empty</h3>
+          <p class="text-muted">Add some products to your cart and they will show up here</p>
+          <a href="/products" class="btn btn-primary mt-3">
+            <i class="bi bi-arrow-left"></i> Continue Shopping
+          </a>
+        </div>
+
+        <!-- Cart Items -->
+        <div th:unless="${#lists.isEmpty(cartItems)}" class="cart-items">
+          <div th:each="item : ${cartItems}" class="product-row">
+            <div class="row w-100 align-items-center">
+              <!-- Product Image -->
+              <div class="col-md-2">
+                <img th:src="${item.product.imageUrl}" th:alt="${item.product.name}" class="product-image">
               </div>
-              <button type="submit" class="btn btn-sm btn-light ms-2">
-                <i class="bi bi-arrow-repeat"></i>
-              </button>
-            </form>
-          </div>
-          
-          <div class="product-subtotal me-3">
-            <h6 class="mb-0">Subtotal</h6>
-            <div class="fw-bold">₹<span th:text="${item.totalPrice}">1,999</span></div>
-          </div>
-          
-          <div class="product-remove">
-            <form th:action="@{/cart/remove}" method="post">
-              <input type="hidden" name="productId" th:value="${item.product.id}" value="1">
-              <button type="submit" class="remove-btn">
-                <i class="bi bi-trash"></i>
-              </button>
-            </form>
+              
+              <!-- Product Details -->
+              <div class="col-md-4">
+                <h5 class="product-name" th:text="${item.product.name}">Product Name</h5>
+                <p class="product-price" th:text="${'$' + #numbers.formatDecimal(item.product.price, 0, 2)}">$0.00</p>
+              </div>
+              
+              <!-- Quantity Controller -->
+              <div class="col-md-4">
+                <form th:action="@{/cart/update}" method="POST" class="d-flex align-items-center">
+                  <input type="hidden" name="productId" th:value="${item.product.id}">
+                  <div class="quantity-controller">
+                    <button type="submit" name="action" value="decrease" class="quantity-btn">
+                      <i class="bi bi-dash"></i>
+                    </button>
+                    <input type="number" name="quantity" th:value="${item.quantity}" 
+                           min="1" max="99" class="quantity-input" readonly>
+                    <button type="submit" name="action" value="increase" class="quantity-btn">
+                      <i class="bi bi-plus"></i>
+                    </button>
+                  </div>
+                </form>
+              </div>
+              
+              <!-- Total and Remove -->
+              <div class="col-md-2 text-end">
+                <p class="mb-2" th:text="${'$' + #numbers.formatDecimal(item.product.price * item.quantity, 0, 2)}">$0.00</p>
+                <form th:action="@{/cart/remove}" method="POST" class="d-inline">
+                  <input type="hidden" name="productId" th:value="${item.product.id}">
+                  <button type="submit" class="remove-btn" title="Remove item">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -497,52 +469,42 @@
     
     <!-- Order Summary -->
     <div class="col-lg-4">
-      <div class="summary-box">
-        <h5 class="summary-title">Order Summary</h5>
+      <div class="summary-box" th:if="${not #lists.isEmpty(cartItems)}">
+        <h3 class="mb-4">Order Summary</h3>
         
-        <div class="summary-row">
+        <div class="d-flex justify-content-between mb-2">
           <span>Subtotal</span>
-          <span>₹<span th:text="${cartTotal}">5,997</span></span>
+          <span th:text="${'$' + #numbers.formatDecimal(subtotal, 0, 2)}">$0.00</span>
         </div>
         
-        <div class="summary-row">
+        <div class="d-flex justify-content-between mb-2">
           <span>Shipping</span>
-          <span>₹99</span>
+          <span th:text="${'$' + #numbers.formatDecimal(shippingCost, 0, 2)}">$0.00</span>
         </div>
         
-        <div class="summary-row">
-          <span>Tax (5%)</span>
-          <span>₹<span th:text="${cartTotal * 0.05}">299.85</span></span>
+        <div class="d-flex justify-content-between mb-2">
+          <span>Tax</span>
+          <span th:text="${'$' + #numbers.formatDecimal(tax, 0, 2)}">$0.00</span>
         </div>
         
-        <div class="summary-total">
-          <span>Total</span>
-          <span>₹<span th:text="${cartTotal + 99 + (cartTotal * 0.05)}">6,395.85</span></span>
+        <hr>
+        
+        <div class="d-flex justify-content-between mb-4">
+          <strong>Total</strong>
+          <strong th:text="${'$' + #numbers.formatDecimal(total, 0, 2)}">$0.00</strong>
         </div>
         
-        <button class="checkout-btn" onclick="window.location.href='/checkout'">
-          <i class="bi bi-credit-card me-2"></i>Proceed to Checkout
-        </button>
+        <form th:action="@{/checkout}" method="GET">
+          <button type="submit" class="btn btn-primary w-100">
+            Proceed to Checkout
+          </button>
+        </form>
         
-        <div class="payment-methods">
-          <i class="bi bi-credit-card payment-icon"></i>
-          <i class="bi bi-paypal payment-icon"></i>
-          <i class="bi bi-wallet2 payment-icon"></i>
-        </div>
+        <a href="/products" class="btn btn-outline-primary w-100 mt-2">
+          Continue Shopping
+        </a>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- Empty Cart -->
-<div class="container fadeIn" th:if="${cartItems == null || cartItems.size() == 0}">
-  <div class="empty-cart">
-    <i class="bi bi-cart-x empty-cart-icon"></i>
-    <h4 class="empty-cart-text">Your cart is empty</h4>
-    <p class="mb-4">Looks like you haven't added anything to your cart yet.</p>
-    <a href="/" class="shop-btn">
-      <i class="bi bi-bag me-2"></i>Continue Shopping
-    </a>
   </div>
 </div>
 
@@ -555,32 +517,5 @@
 
 <!-- Bootstrap & Custom JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Quantity increment/decrement
-    const decrementButtons = document.querySelectorAll('.decrement');
-    const incrementButtons = document.querySelectorAll('.increment');
-    
-    decrementButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const input = this.parentNode.querySelector('.quantity-input');
-        let value = parseInt(input.value, 10);
-        if (value > 1) {
-          value--;
-          input.value = value;
-        }
-      });
-    });
-    
-    incrementButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const input = this.parentNode.querySelector('.quantity-input');
-        let value = parseInt(input.value, 10);
-        value++;
-        input.value = value;
-      });
-    });
-  });
-</script>
 </body>
 </html>

@@ -1,785 +1,393 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard - Vanta</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-    />
+    <title>Admin Dashboard | MyShop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-      :root {
-        /* Light mode colors */
-        --bg-primary: #f8fafc;
-        --bg-secondary: #ffffff;
-        --text-primary: #1e293b;
-        --text-secondary: #475569;
-        --accent-primary: #16ac50;
-        --accent-hover: #15753a;
-        --border: #e2e8f0;
-        --card-shadow: rgba(0, 0, 0, 0.05);
-        --sidebar-bg: #2d3748;
-        --sidebar-text: #e2e8f0;
-        --sidebar-hover: #334155;
-        --success: #22c55e;
-        --warning: #eab308;
-        --error: #ef4444;
-        --success-bg: #dcfce7;
-        --warning-bg: #fef3c7;
-        --error-bg: #fee2e2;
-      }
-
-      /* Dark mode overrides */
-      [data-theme="dark"] {
-        --bg-primary: #1f2a44;
-        --bg-secondary: #2d3748;
-        --text-primary: #e2e8f0;
-        --text-secondary: #94a3b8;
-        --accent-primary: #15753a;
-        --accent-hover: #15753a;
-        --border: #4b5563;
-        --card-shadow: rgba(0, 0, 0, 0.2);
-        --sidebar-bg: #2d3748;
-        --sidebar-text: #d1d5db;
-        --sidebar-hover: #1f2a44;
-        --success: #4ade80;
-        --warning: #facc15;
-        --error: #f87171;
-        --success-bg: #166534;
-        --warning-bg: #854d0e;
-        --error-bg: #991b1b;
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
       body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, sans-serif;
-        background: var(--bg-primary);
-        color: var(--text-primary);
-        line-height: 1.6;
-        transition: background 0.3s ease, color 0.3s ease;
-      }
-
-      .container {
-        display: flex;
+        background-color: #f8f9fa;
         min-height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
-
-      /* Sidebar */
-      .sidebar {
-        width: 250px;
-        background: var(--sidebar-bg);
-        color: var(--sidebar-text);
-        padding: 20px;
-        position: fixed;
+      .dashboard-container {
+        margin: 2rem 0;
+      }
+      .stats-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
         height: 100%;
-        transition: transform 0.3s ease;
       }
-
-      .sidebar.collapsed {
-        transform: translateX(-100%);
+      .stats-icon {
+        width: 48px;
+        height: 48px;
+        background: #e9ecef;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
       }
-
-      .sidebar h3 {
+      .stats-icon i {
         font-size: 1.5rem;
-        margin-bottom: 20px;
-        color: var(--sidebar-text);
+        color: #6c757d;
       }
-
-      .sidebar a {
-        color: var(--sidebar-text);
+      .quick-action-card {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 1rem;
         text-decoration: none;
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        border-radius: 6px;
-        margin-bottom: 10px;
-        font-size: 1rem;
+        color: inherit;
+        transition: all 0.3s ease;
       }
-
-      .sidebar a i {
-        margin-right: 10px;
+      .quick-action-card:hover {
+        background: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
-
-      .sidebar a:hover,
-      .sidebar a.active {
-        background: var(--sidebar-hover);
+      .recent-activity {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
       }
-
-      .sidebar-toggle {
-        display: none;
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: var(--sidebar-bg);
-        color: var(--sidebar-text);
-        border: none;
-        padding: 10px;
-        border-radius: 6px;
-        cursor: pointer;
-        z-index: 1000;
+      .activity-item {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
       }
-
-      /* Main Content */
-      .main {
-        margin-left: 250px;
-        flex: 1;
-        padding: 40px;
-        transition: margin-left 0.3s ease;
-      }
-
-      .main.full-width {
-        margin-left: 0;
-      }
-
-      .topbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-      }
-
-      .topbar h2 {
-        font-size: 2rem;
-        color: var(--text-primary);
-      }
-
-      .topbar-right {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-      }
-
-      .topbar input[type="search"] {
-        padding: 10px 15px;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        font-size: 1rem;
-        width: 250px;
-        outline: none;
-        background: var(--bg-secondary);
-        color: var(--text-primary);
-      }
-
-      .topbar input[type="search"]:focus {
-        border-color: var(--accent-primary);
-      }
-
-      .user-dropdown {
-        position: relative;
-      }
-
-      .user-dropdown button {
-        background: var(--border);
-        border: none;
-        padding: 8px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--text-primary);
-      }
-
-      .dark-mode-toggle {
-        background: var(--border);
-        border: none;
-        padding: 8px;
-        border-radius: 6px;
-        cursor: pointer;
-        color: var(--text-primary);
-      }
-
-      /* Cards */
-      .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-      }
-
-      .card {
-        background: var(--bg-secondary);
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px var(--card-shadow);
-        transition: transform 0.2s, background 0.3s ease;
-      }
-
-      .card:hover {
-        transform: translateY(-3px);
-      }
-
-      .card h3 {
-        font-size: 1.2rem;
-        color: var(--text-secondary);
-        margin-bottom: 10px;
-      }
-
-      .card p {
-        font-size: 1.8rem;
-        font-weight: 600;
-        color: var(--text-primary);
-      }
-
-      .card small {
-        color: var(--text-secondary);
-      }
-
-      .card .trend-up {
-        color: var(--success);
-      }
-
-      .card .trend-down {
-        color: var(--error);
-      }
-
-      /* Chart Box */
-      .chart-box {
-        background: var(--bg-secondary);
-        padding: 20px;
-        border-radius: 12px;
-        margin-bottom: 30px;
-        transition: background 0.3s ease;
-      }
-
-      .chart-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-
-      .chart-header h3 {
-        font-size: 1.5rem;
-        color: var(--text-primary);
-      }
-
-      .chart-header select {
-        padding: 8px;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        font-size: 1rem;
-        background: var(--bg-secondary);
-        color: var(--text-primary);
-      }
-
-      /* Orders Table */
-      .orders-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 10px;
-        background: var(--bg-secondary);
-        border-radius: 12px;
-        overflow: hidden;
-        transition: background 0.3s ease;
-      }
-
-      .orders-table th {
-        background: var(--border);
-        padding: 15px;
-        text-align: left;
-        font-weight: 600;
-        color: var(--text-secondary);
-      }
-
-      .orders-table td {
-        padding: 15px;
-        background: var(--bg-secondary);
-        vertical-align: middle;
-      }
-
-      .orders-table tr {
-        transition: background 0.2s;
-      }
-
-      .orders-table tr:hover {
-        background: var(--sidebar-hover);
-      }
-
-      .status {
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-size: 0.9rem;
-      }
-
-      .status-approved {
-        background: var(--success-bg);
-        color: var(--success);
-      }
-
-      .status-pending {
-        background: var(--warning-bg);
-        color: var(--warning);
-      }
-
-      .status-rejected {
-        background: var(--error-bg);
-        color: var(--error);
-      }
-
-      /* Todo Section */
-      .todo-card {
-        background: var(--bg-secondary);
-        padding: 20px;
-        border-radius: 12px;
-        transition: background 0.3s ease;
-      }
-
-      .todo-card input[type="text"] {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        font-size: 1rem;
-        margin-bottom: 15px;
-        outline: none;
-        background: var(--bg-secondary);
-        color: var(--text-primary);
-      }
-
-      .todo-card input[type="text"]:focus {
-        border-color: var(--accent-primary);
-      }
-
-      .todo-list {
-        list-style: none;
-        padding: 0;
-      }
-
-      .todo-list li {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .todo-list li:last-child {
+      .activity-item:last-child {
         border-bottom: none;
       }
-
-      .todo-list input[type="checkbox"] {
-        margin-right: 10px;
-      }
-
-      .todo-list .delete-todo {
-        background: var(--error);
-        color: #ffffff;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 6px;
-        cursor: pointer;
-      }
-
-      /* Toast */
-      .toast {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: var(--success);
-        color: #ffffff;
-        padding: 15px 20px;
-        border-radius: 8px;
-        display: none;
-        z-index: 2000;
-        animation: slideUp 0.3s ease;
-      }
-
-      @keyframes slideUp {
-        from {
-          transform: translateY(50px);
-          opacity: 0;
-        }
-
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
-
-      /* Responsive Design */
-      @media (max-width: 768px) {
-        .sidebar {
-          transform: translateX(-100%);
-        }
-
-        .sidebar.collapsed {
-          transform: translateX(0);
-        }
-
-        .main {
-          margin-left: 0;
-        }
-
-        .main.full-width {
-          margin-left: 250px;
-        }
-
-        .sidebar-toggle {
-          display: block;
-        }
-
-        .topbar input[type="search"] {
-          width: 100%;
-        }
-      }
-
-      @media (max-width: 600px) {
-        .cards {
-          grid-template-columns: 1fr;
-        }
-
-        .topbar {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 15px;
-        }
-
-        .topbar-right {
-          width: 100%;
-          justify-content: space-between;
-        }
+      .chart-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
       }
     </style>
   </head>
 
-  <body data-theme="light">
-    <div class="container">
-      <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
-      <div class="sidebar">
-        <h3>Vanta Admin</h3>
-        <a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a>
-        <a href="#"><i class="fas fa-plus"></i> Add Product</a>
-        <a href="#"><i class="fas fa-edit"></i> Edit Product</a>
-        <a href="#"><i class="fas fa-trash"></i> Delete Product</a>
-        <a href="#"><i class="fas fa-box"></i> Manage Orders</a>
-        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+  <body>
+    <!-- Navigation -->
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <div class="container flex-grow-1 dashboard-container">
+      <!-- Welcome Message -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2>Welcome, <span th:text="${admin.firstName}">Admin</span>!</h2>
+          <p class="text-muted">Here's what's happening in your store today.</p>
+        </div>
+        <div class="text-end">
+          <span class="text-muted">Last updated: </span>
+          <span th:text="${#temporals.format(lastUpdated, 'MMM dd, yyyy HH:mm')}">Jan 1, 2024 12:00</span>
+        </div>
       </div>
 
-      <div class="main">
-        <div class="topbar">
-          <h2>Dashboard</h2>
-          <div class="topbar-right">
-            <input
-              type="search"
-              id="searchInput"
-              placeholder="Search orders..."
-            />
-            <div class="user-dropdown">
-              <button><i class="fas fa-user"></i> Admin</button>
+      <!-- Statistics Cards -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-3">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="bi bi-cart"></i>
             </div>
-            <button class="dark-mode-toggle" id="darkModeToggle">
-              <i class="fas fa-moon"></i>
-            </button>
+            <h3 class="mb-1" th:text="${stats.todayOrders}">0</h3>
+            <p class="text-muted mb-0">Today's Orders</p>
+            <small class="text-success" th:if="${stats.orderGrowth > 0}">
+              <i class="bi bi-arrow-up"></i>
+              <span th:text="${stats.orderGrowth}">0</span>% from yesterday
+            </small>
+            <small class="text-danger" th:if="${stats.orderGrowth < 0}">
+              <i class="bi bi-arrow-down"></i>
+              <span th:text="${stats.orderGrowth}">0</span>% from yesterday
+            </small>
           </div>
         </div>
-
-        <div class="cards">
-          <div class="card">
-            <h3>Orders</h3>
-            <p>$8,753</p>
-            <small><span class="trend-up">18.33%</span> Since last month</small>
-          </div>
-          <div class="card">
-            <h3>Sales</h3>
-            <p>$12,450</p>
-            <small><span class="trend-up">10.5%</span> Since last month</small>
-          </div>
-          <div class="card">
-            <h3>Revenue</h3>
-            <p>$20,300</p>
-            <small><span class="trend-down">5.2%</span> Since last month</small>
-          </div>
-          <div class="card">
-            <h3>Cost</h3>
-            <p>$7,890</p>
-            <small><span class="trend-up">2.8%</span> Since last month</small>
+        <div class="col-md-3">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="bi bi-currency-dollar"></i>
+            </div>
+            <h3 class="mb-1">$<span th:text="${#numbers.formatDecimal(stats.todayRevenue, 0, 'COMMA', 2, 'POINT')}">0.00</span></h3>
+            <p class="text-muted mb-0">Today's Revenue</p>
+            <small class="text-success" th:if="${stats.revenueGrowth > 0}">
+              <i class="bi bi-arrow-up"></i>
+              <span th:text="${stats.revenueGrowth}">0</span>% from yesterday
+            </small>
+            <small class="text-danger" th:if="${stats.revenueGrowth < 0}">
+              <i class="bi bi-arrow-down"></i>
+              <span th:text="${stats.revenueGrowth}">0</span>% from yesterday
+            </small>
           </div>
         </div>
-
-        <div class="chart-box">
-          <div class="chart-header">
-            <h3>Orders Overview</h3>
-            <select id="chartFilter">
-              <option>Month</option>
-              <option>Week</option>
-              <option>Year</option>
-            </select>
+        <div class="col-md-3">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="bi bi-people"></i>
+            </div>
+            <h3 class="mb-1" th:text="${stats.activeUsers}">0</h3>
+            <p class="text-muted mb-0">Active Users</p>
+            <small class="text-success" th:if="${stats.userGrowth > 0}">
+              <i class="bi bi-arrow-up"></i>
+              <span th:text="${stats.userGrowth}">0</span>% this week
+            </small>
+            <small class="text-danger" th:if="${stats.userGrowth < 0}">
+              <i class="bi bi-arrow-down"></i>
+              <span th:text="${stats.userGrowth}">0</span>% this week
+            </small>
           </div>
-          <canvas id="ordersChart"></canvas>
         </div>
+        <div class="col-md-3">
+          <div class="stats-card">
+            <div class="stats-icon">
+              <i class="bi bi-box"></i>
+            </div>
+            <h3 class="mb-1" th:text="${stats.lowStockProducts}">0</h3>
+            <p class="text-muted mb-0">Low Stock Products</p>
+            <small class="text-warning" th:if="${stats.lowStockProducts > 0}">
+              <i class="bi bi-exclamation-triangle"></i>
+              Needs attention
+            </small>
+            <small class="text-success" th:if="${stats.lowStockProducts == 0}">
+              <i class="bi bi-check-circle"></i>
+              Stock levels good
+            </small>
+          </div>
+        </div>
+      </div>
 
-        <div class="chart-box">
-          <div class="chart-header">
-            <h3>Recent Orders</h3>
+      <!-- Charts -->
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <div class="chart-container">
+            <h5 class="mb-4">Sales Overview</h5>
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="chart-container h-100">
+            <h5 class="mb-4">Top Categories</h5>
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <h4 class="mb-3">Quick Actions</h4>
+      <div class="row g-4 mb-4">
+        <div class="col-md-3">
+          <a th:href="@{/admin/products/add}" class="quick-action-card d-block">
+            <i class="bi bi-plus-circle mb-2"></i>
+            <h6 class="mb-1">Add New Product</h6>
+            <small class="text-muted">Create a new product listing</small>
+          </a>
+        </div>
+        <div class="col-md-3">
+          <a th:href="@{/admin/orders}" class="quick-action-card d-block">
+            <i class="bi bi-list-check mb-2"></i>
+            <h6 class="mb-1">Manage Orders</h6>
+            <small class="text-muted">View and process orders</small>
+          </a>
+        </div>
+        <div class="col-md-3">
+          <a th:href="@{/admin/products}" class="quick-action-card d-block">
+            <i class="bi bi-box-seam mb-2"></i>
+            <h6 class="mb-1">Inventory</h6>
+            <small class="text-muted">Manage product inventory</small>
+          </a>
+        </div>
+        <div class="col-md-3">
+          <a th:href="@{/admin/users}" class="quick-action-card d-block">
+            <i class="bi bi-people mb-2"></i>
+            <h6 class="mb-1">Users</h6>
+            <small class="text-muted">Manage user accounts</small>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="row">
+        <div class="col-md-8">
+          <div class="recent-activity">
+            <h5 class="mb-4">Recent Activity</h5>
+            <div th:each="activity : ${recentActivities}" class="activity-item">
+              <div class="d-flex align-items-center">
+                <div th:switch="${activity.type}" class="me-3">
+                  <i th:case="'ORDER'" class="bi bi-cart text-primary"></i>
+                  <i th:case="'USER'" class="bi bi-person text-success"></i>
+                  <i th:case="'PRODUCT'" class="bi bi-box text-warning"></i>
+                  <i th:case="*" class="bi bi-bell text-secondary"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <p class="mb-0" th:text="${activity.description}">Activity description</p>
+                  <small class="text-muted" th:text="${#temporals.format(activity.timestamp, 'MMM dd, HH:mm')}">Jan 1, 12:00</small>
+                </div>
+                <div>
+                  <a th:if="${activity.actionUrl}" th:href="${activity.actionUrl}" 
+                     class="btn btn-sm btn-light">View</a>
+                </div>
+              </div>
+            </div>
+            <div th:if="${#lists.isEmpty(recentActivities)}" class="text-center py-4">
+              <p class="text-muted mb-0">No recent activity</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <!-- Pending Tasks -->
+          <div class="recent-activity mb-4">
+            <h5 class="mb-4">Pending Tasks</h5>
+            <div th:each="task : ${pendingTasks}" class="activity-item">
+              <div class="d-flex align-items-center">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" 
+                         th:id="'task' + ${task.id}"
+                         th:checked="${task.completed}">
+                </div>
+                <div class="ms-3">
+                  <p class="mb-0" th:text="${task.description}">Task description</p>
+                  <small class="text-muted" th:text="${task.dueDate}">Due date</small>
+                </div>
+              </div>
+            </div>
+            <div th:if="${#lists.isEmpty(pendingTasks)}" class="text-center py-4">
+              <p class="text-muted mb-0">No pending tasks</p>
+            </div>
+          </div>
+
+          <!-- System Status -->
+          <div class="recent-activity">
+            <h5 class="mb-4">System Status</h5>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span>Server Load</span>
+                <span th:text="${stats.serverLoad + '%'}">0%</span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar" role="progressbar" 
+                     th:style="'width: ' + ${stats.serverLoad + '%'}"
+                     th:classappend="${stats.serverLoad < 70 ? 'bg-success' : 'bg-warning'}"
+                     aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span>Storage</span>
+                <span th:text="${stats.storageUsed + '%'}">0%</span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar" role="progressbar" 
+                     th:style="'width: ' + ${stats.storageUsed + '%'}"
+                     th:classappend="${stats.storageUsed < 80 ? 'bg-success' : 'bg-danger'}"
+                     aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
             <div>
-              <select id="statusFilter">
-                <option value="">All Status</option>
-                <option value="Approved">Approved</option>
-                <option value="Pending">Pending</option>
-                <option value="Rejected">Rejected</option>
-              </select>
-              <button
-                style="
-                  background: var(--accent-primary);
-                  color: white;
-                  padding: 8px 16px;
-                  border: none;
-                  border-radius: 6px;
-                  margin-left: 10px;
-                "
-              >
-                Export CSV
-              </button>
+              <div class="d-flex justify-content-between mb-1">
+                <span>Memory</span>
+                <span th:text="${stats.memoryUsed + '%'}">0%</span>
+              </div>
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar" role="progressbar" 
+                     th:style="'width: ' + ${stats.memoryUsed + '%'}"
+                     th:classappend="${stats.memoryUsed < 75 ? 'bg-success' : 'bg-warning'}"
+                     aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
             </div>
-          </div>
-          <table class="orders-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Assignee</th>
-                <th>Task Details</th>
-                <th>Payment Method</th>
-                <th>Status</th>
-                <th>Amount</th>
-                <th>Tracking Number</th>
-              </tr>
-            </thead>
-            <tbody id="ordersTable">
-              <tr>
-                <td>#320</td>
-                <td>Mark C. Diaz</td>
-                <td>Support of theme</td>
-                <td>Credit Card</td>
-                <td><span class="status status-approved">Approved</span></td>
-                <td>$12,245</td>
-                <td>JPBBN435893458</td>
-              </tr>
-              <tr>
-                <td>#321</td>
-                <td>Jose D</td>
-                <td>Verify your email address</td>
-                <td>Internet Banking</td>
-                <td><span class="status status-pending">Pending</span></td>
-                <td>$12,245</td>
-                <td>BDYBN435893325</td>
-              </tr>
-              <tr>
-                <td>#322</td>
-                <td>Philips T</td>
-                <td>Item support message send</td>
-                <td>Credit Card</td>
-                <td><span class="status status-approved">Approved</span></td>
-                <td>$12,245</td>
-                <td>JSNTN435884258</td>
-              </tr>
-              <tr>
-                <td>#323</td>
-                <td>Luke Pixel</td>
-                <td>New submission on website</td>
-                <td>Cash on Delivery</td>
-                <td><span class="status status-rejected">Rejected</span></td>
-                <td>$12,245</td>
-                <td>JPABT435893678</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="cards">
-          <div class="card">
-            <h3>Traffic Source</h3>
-            <canvas id="trafficChart"></canvas>
-            <p style="text-align: center; margin-top: 10px">
-              Facebook - 40% | Google - 60%
-            </p>
-          </div>
-          <div class="todo-card">
-            <h3>Todo</h3>
-            <form id="todoForm">
-              <input
-                type="text"
-                id="todoInput"
-                placeholder="Add a new task..."
-                required
-              />
-            </form>
-            <ul class="todo-list" id="todoList">
-              <li>
-                <label
-                  ><input type="checkbox" /> Pick up kids from school</label
-                >
-                <button class="delete-todo">Delete</button>
-              </li>
-              <li>
-                <label
-                  ><input type="checkbox" checked /> Prepare for
-                  presentation</label
-                >
-                <button class="delete-todo">Delete</button>
-              </li>
-              <li>
-                <label><input type="checkbox" /> Print Statements</label>
-                <button class="delete-todo">Delete</button>
-              </li>
-            </ul>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <!-- Footer -->
+    <div th:replace="fragments/footer :: footer"></div>
 
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      const sidebar = document.querySelector(".sidebar");
-      const main = document.querySelector(".main");
-      document
-        .querySelector(".sidebar-toggle")
-        .addEventListener("click", () => {
-          sidebar.classList.toggle("collapsed");
-          main.classList.toggle("full-width");
-        });
-
-      document
-        .getElementById("darkModeToggle")
-        .addEventListener("click", () => {
-          const isDark = document.body.getAttribute("data-theme") === "dark";
-          document.body.setAttribute("data-theme", isDark ? "light" : "dark");
-          const purus = document.querySelector("#darkModeToggle i");
-          purus.className = isDark ? "fas fa-moon" : "fas fa-sun";
-        });
-
-      const ordersChart = new Chart(document.getElementById("ordersChart"), {
-        type: "bar",
+    <script th:inline="javascript">
+      // Sales Chart
+      const salesData = /*[[${salesData}]]*/ [];
+      const salesCtx = document.getElementById('salesChart').getContext('2d');
+      new Chart(salesCtx, {
+        type: 'line',
         data: {
-          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
-          datasets: [
-            {
-              label: "Orders",
-              data: [100, 180, 90, 200, 150, 70, 220, 160],
-              backgroundColor: getComputedStyle(document.documentElement)
-                .getPropertyValue("--accent-primary")
-                .trim(),
-              borderRadius: 5,
-            },
-          ],
+          labels: salesData.map(d => d.date),
+          datasets: [{
+            label: 'Sales',
+            data: salesData.map(d => d.amount),
+            borderColor: '#0d6efd',
+            tension: 0.1
+          }]
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
           scales: {
-            y: { beginAtZero: true },
-          },
-          plugins: {
-            legend: { display: false },
-          },
-        },
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
       });
 
-      const trafficChart = new Chart(document.getElementById("trafficChart"), {
-        type: "pie",
+      // Category Chart
+      const categoryData = /*[[${categoryData}]]*/ [];
+      const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+      new Chart(categoryCtx, {
+        type: 'doughnut',
         data: {
-          labels: ["Google", "Facebook"],
-          datasets: [
-            {
-              data: [60, 40],
-              backgroundColor: [
-                getComputedStyle(document.documentElement)
-                  .getPropertyValue("--accent-primary")
-                  .trim(),
-                getComputedStyle(document.documentElement)
-                  .getPropertyValue("--accent-hover")
-                  .trim(),
-              ],
-            },
-          ],
+          labels: categoryData.map(d => d.name),
+          datasets: [{
+            data: categoryData.map(d => d.sales),
+            backgroundColor: [
+              '#0d6efd',
+              '#6610f2',
+              '#6f42c1',
+              '#d63384',
+              '#dc3545'
+            ]
+          }]
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
-            legend: { position: "bottom" },
-          },
-        },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
       });
 
-      const searchInput = document.getElementById("searchInput");
-      const statusFilter = document.getElementById("statusFilter");
-      const ordersTable = document.getElementById("ordersTable");
-
-      function filterTable() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const status = statusFilter.value;
-        const rows = ordersTable.querySelectorAll("tr");
-
-        rows.forEach((row) => {
-          const id = row
-            .querySelector("td:nth-child(1)")
-            .textContent.toLowerCase();
-          const assignee = row
-            .querySelector("td:nth-child(2)")
-            .textContent.toLowerCase();
-          const task = row
-            .querySelector("td:nth-child(3)")
-            .textContent.toLowerCase();
-          const rowStatus = row.querySelector(
-            "td:nth-child(5) span"
-          ).textContent;
-
-          const matchesSearch =
-            id.includes(searchTerm) ||
-            assignee.includes(searchTerm) ||
-            task.includes(searchTerm);
-          const matchesStatus = !status || rowStatus === status;
-
-          row.style.display = matchesSearch && matchesStatus ? "" : "none";
+      // Task completion handling
+      document.querySelectorAll('.form-check-input').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          const taskId = this.id.replace('task', '');
+          fetch(`/admin/tasks/${taskId}/toggle`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }).then(response => {
+            if (!response.ok) {
+              this.checked = !this.checked;
+              alert('Failed to update task status');
+            }
+          });
         });
-      }
-
-      searchInput.addEventListener("input", filterTable);
-      statusFilter.addEventListener("change", filterTable);
-
-      const todoForm = document.getElementById("todoForm");
-      const todoInput = document.getElementById("todoInput");
-      const todoList = document.getElementById("todoList");
-
-      todoForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const task = todoInput.value.trim();
-        if (task) {
-          const li = document.createElement("li");
-          li.innerHTML = `
-                    <label><input type="checkbox"> ${task}</label>
-                    <button class="delete-todo">Delete</button>
-                `;
-          todoList.appendChild(li);
-          todoInput.value = "";
-          showToast("Task added!", "success");
-        }
       });
-
-      todoList.addEventListener("click", (e) => {
-        if (e.target.classList.contains("delete-todo")) {
-          e.target.parentElement.remove();
-          showToast("Task deleted!", "success");
-        }
-      });
-
-      function showToast(message, type) {
-        const toast = document.getElementById("toast");
-        toast.textContent = message;
-        toast.className = `toast ${type}`;
-        toast.style.display = "block";
-        setTimeout(() => {
-          toast.style.display = "none";
-        }, 3000);
-      }
     </script>
   </body>
 </html>

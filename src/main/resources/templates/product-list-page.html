@@ -3,604 +3,626 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products | MyShop</title>
+    <title th:text="${category != null ? category.name + ' | MyShop' : 'All Products | MyShop'}">Products | MyShop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2575fc;
-            --primary-dark: #1a5fd0;
-            --gradient-start: #6a11cb;
-            --gradient-end: #2575fc;
-            --accent: #fe7f4c;
-            --success: #28a745;
-            --light-bg: #f8f9fa;
-            --dark-text: #343a40;
-            --light-text: #6c757d;
-        }
-
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--light-bg);
-            color: var(--dark-text);
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-
-        .page-title {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            color: white;
-            padding: 3rem 1rem;
-            text-align: center;
-            border-radius: 0 0 30px 30px;
-            margin-bottom: 2.5rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            position: relative;
-            overflow: hidden;
+        .products-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin: 2rem 0;
         }
-
-        .page-title::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            pointer-events: none;
+        .filters-sidebar {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
         }
-
-        .page-title h1 {
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        .filter-section {
+            margin-bottom: 1.5rem;
+        }
+        .filter-section:last-child {
+            margin-bottom: 0;
+        }
+        .filter-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .price-range {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .price-input {
+            width: 100px;
+        }
+        .brand-checkbox {
+            display: flex;
+            align-items: center;
             margin-bottom: 0.5rem;
         }
-
-        .page-title p {
-            font-weight: 300;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
+        .brand-checkbox:last-child {
+            margin-bottom: 0;
         }
-
-        .filters-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .search-bar {
-            max-width: 100%;
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .search-bar .form-control {
-            padding-left: 40px;
-            border-radius: 30px;
-            height: 50px;
-            border: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-        }
-
-        .search-bar .bi-search {
-            position: absolute;
-            left: 15px;
-            top: 16px;
-            color: var(--light-text);
-        }
-
-        .category-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .category-buttons a {
-            padding: 8px 20px;
-            border-radius: 30px;
-            text-decoration: none;
-            background-color: #fff;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            font-weight: 500;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .category-buttons a.active,
-        .category-buttons a:hover {
-            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3);
-        }
-
-        .card {
-            border: none;
-            border-radius: 18px;
-            transition: all 0.4s ease;
-            overflow: hidden;
-            background: white;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.07);
-            height: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 14px 30px rgba(0,0,0,0.12);
-        }
-
-        .card-img-wrapper {
-            position: relative;
-            overflow: hidden;
-            height: 240px;
-        }
-
-        .card-img-top {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s ease;
-        }
-
-        .card:hover .card-img-top {
-            transform: scale(1.08);
-        }
-
-        .tag-badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            z-index: 2;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-        }
-
-        .tag-new {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            color: white;
-        }
-
-        .tag-sale {
-            background: linear-gradient(45deg, #ffa502, #ff6b6b);
-            color: white;
-        }
-
-        .quick-view {
-            position: absolute;
-            bottom: -50px;
-            left: 0;
-            right: 0;
-            background: rgba(255,255,255,0.9);
-            color: var(--primary);
-            padding: 12px;
-            text-align: center;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .card:hover .quick-view {
-            bottom: 0;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.15rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--dark-text);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            height: 2.8rem;
-        }
-
-        .card-category {
-            color: var(--light-text);
-            font-size: 0.8rem;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .rating {
-            margin-bottom: 12px;
-        }
-
-        .rating .bi-star-fill {
-            color: #ffc107;
-        }
-
-        .rating .bi-star {
-            color: #e0e0e0;
-        }
-
-        .rating-count {
-            font-size: 0.8rem;
-            color: var(--light-text);
-            margin-left: 5px;
-        }
-
-        .card-text {
-            color: var(--light-text);
-            font-size: 0.85rem;
-            margin-bottom: 15px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            height: 2.6rem;
-        }
-
-        .price-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            gap: 10px;
-        }
-
-        .price {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--success);
-        }
-
-        .old-price {
-            text-decoration: line-through;
-            color: var(--light-text);
-            font-size: 0.9rem;
-        }
-
-        .discount-badge {
-            background-color: #ffeded;
-            color: #f44336;
-            font-size: 0.75rem;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-view {
-            flex: 1;
-            background-color: white;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            border-radius: 30px;
-            padding: 8px 15px;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .btn-view:hover {
-            background-color: var(--primary-dark);
-            color: white;
-            border-color: var(--primary-dark);
-        }
-
-        .btn-add {
-            flex: 1.5;
-            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 10px 20px;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            font-weight: 500;
-            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-add::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: all 0.6s;
-        }
-
-        .btn-add:hover::before {
-            left: 100%;
-        }
-
-        .btn-add:hover {
-            box-shadow: 0 8px 20px rgba(37, 117, 252, 0.3);
-            transform: translateY(-3px);
-        }
-
-        .btn-add .bi {
-            margin-right: 8px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            margin:30px;
-        }
-
-        .empty-state img {
-            max-width: 200px;
-            margin-bottom: 1.5rem;
-        }
-
-        .empty-state h4 {
-            font-weight: 600;
-            color: var(--dark-text);
-            margin-bottom: 1rem;
-        }
-
-        .empty-state p {
-            color: var(--light-text);
-            margin-bottom: 1.5rem;
-            max-width: 500px;
+        .brand-count {
+            color: #6c757d;
+            font-size: 0.875rem;
             margin-left: auto;
-            margin-right: auto;
         }
-
-        .sort-by {
-            width: auto;
-            border-radius: 20px;
-            padding: 8px 15px;
-            background-color: white;
-            border: 1px solid rgba(0,0,0,0.1);
-            font-size: 0.9rem;
-        }
-
-        .filter-row {
+        .view-options {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
+            gap: 0.5rem;
         }
-
-        .filter-label {
-            font-size: 0.9rem;
-            color: var(--light-text);
-        }
-
-        .pagination-container {
-            margin-top: 2.5rem;
-            display: flex;
-            justify-content: center;
-        }
-
-        .pagination .page-item .page-link {
-            border: none;
-            margin: 0 5px;
+        .view-btn {
             width: 40px;
             height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            color: var(--dark-text);
-            font-weight: 500;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background: white;
+            color: #6c757d;
+            transition: all 0.3s ease;
         }
-
-        .pagination .page-item.active .page-link {
-            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+        .view-btn:hover {
+            border-color: #0d6efd;
+            color: #0d6efd;
+        }
+        .view-btn.active {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
             color: white;
         }
-
-        @media (max-width: 768px) {
-            .category-buttons {
-                overflow-x: auto;
-                padding-bottom: 10px;
-                flex-wrap: nowrap;
-                justify-content: flex-start;
-            }
-            
-            .category-buttons a {
-                white-space: nowrap;
-            }
-            
-            .card-actions {
-                flex-direction: column;
-            }
-            
-            .filter-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .product-info {
+            padding: 1rem;
+        }
+        .product-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .product-price {
+            color: #0d6efd;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .product-price .original-price {
+            text-decoration: line-through;
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+        .product-price .discount-badge {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+        .product-rating {
+            color: #ffc107;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        .product-meta {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+        .wishlist-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .wishlist-btn:hover {
+            transform: scale(1.1);
+        }
+        .wishlist-btn i {
+            font-size: 1rem;
+            color: #dc3545;
+        }
+        .wishlist-btn.active i {
+            color: #dc3545;
+        }
+        .wishlist-btn:not(.active) i {
+            color: #6c757d;
+        }
+        .product-list-view {
+            display: none;
+        }
+        .product-list-view .product-image {
+            width: 200px;
+            height: 200px;
+        }
+        .product-list-view .product-info {
+            flex: 1;
+        }
+        .product-list-view .product-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .sort-dropdown {
+            min-width: 200px;
+        }
+        .pagination {
+            margin-top: 2rem;
+        }
+        .page-link {
+            color: #0d6efd;
+        }
+        .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .filter-tag {
+            background-color: #e9ecef;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .filter-tag i {
+            cursor: pointer;
+        }
+        .filter-tag:hover {
+            background-color: #dee2e6;
+        }
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+        }
+        .no-results i {
+            font-size: 3rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
 <body>
+    <!-- Navigation -->
+    <div th:replace="fragments/navbar :: navbar"></div>
 
-<!-- Page Banner -->
-<div class="page-title">
-    <h1 th:text="${categoryName != null} ? ${categoryName} : 'Explore Our Products'">Explore Our Products</h1>
-    <p>Discover our range of high-quality items designed just for you</p>
-</div>
+    <div class="container flex-grow-1">
+        <div class="products-container">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item" th:if="${category != null}">
+                        <a th:href="@{/categories}">Categories</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" 
+                        th:text="${category != null ? category.name : 'All Products'}">
+                        Category Name
+                    </li>
+                </ol>
+            </nav>
 
-<div class="container">
-    <!-- Filters Section -->
-    <div class="filters-container">
-        <!-- Search Bar -->
-        <div class="search-bar">
-            <i class="bi bi-search"></i>
-            <input type="text" class="form-control" placeholder="Search products..." id="searchInput">
-        </div>
-        
-        <!-- Filter Row -->
-        <div class="filter-row">
-            <div class="category-buttons">
-                <a href="/products" th:classappend="${categoryName == null} ? 'active'">All Products</a>
-                <a th:each="category : ${categories}" 
-                   th:href="@{/products/category/{name}(name=${category})}"
-                   th:text="${category}" 
-                   th:classappend="${categoryName == category} ? 'active'">Category</a>
+            <div class="row">
+                <!-- Filters Sidebar -->
+                <div class="col-md-3">
+                    <div class="filters-sidebar">
+                        <!-- Active Filters -->
+                        <div class="filter-tags" th:if="${not #lists.isEmpty(activeFilters)}">
+                            <div th:each="filter : ${activeFilters}" class="filter-tag">
+                                <span th:text="${filter.name}">Filter Name</span>
+                                <i class="bi bi-x" th:onclick="'removeFilter(\'' + ${filter.id} + '\')'"></i>
+                            </div>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="filter-section">
+                            <div class="filter-title">Price Range</div>
+                            <div class="price-range">
+                                <input type="number" class="form-control price-input" id="minPrice" 
+                                       th:value="${minPrice}" placeholder="Min">
+                                <span>to</span>
+                                <input type="number" class="form-control price-input" id="maxPrice" 
+                                       th:value="${maxPrice}" placeholder="Max">
+                            </div>
+                        </div>
+
+                        <!-- Categories -->
+                        <div class="filter-section">
+                            <div class="filter-title">Categories</div>
+                            <div class="form-check" th:each="cat : ${categories}">
+                                <input class="form-check-input" type="checkbox" 
+                                       th:id="'category-' + ${cat.id}"
+                                       th:checked="${cat.selected}"
+                                       th:onclick="'toggleCategory(' + ${cat.id} + ')'">
+                                <label class="form-check-label" 
+                                       th:for="'category-' + ${cat.id}"
+                                       th:text="${cat.name}">Category Name</label>
+                            </div>
+                        </div>
+
+                        <!-- Brands -->
+                        <div class="filter-section">
+                            <div class="filter-title">Brands</div>
+                            <div class="brand-checkbox" th:each="brand : ${brands}">
+                                <input class="form-check-input" type="checkbox" 
+                                       th:id="'brand-' + ${brand.id}"
+                                       th:checked="${brand.selected}"
+                                       th:onclick="'toggleBrand(' + ${brand.id} + ')'">
+                                <label class="form-check-label" 
+                                       th:for="'brand-' + ${brand.id}"
+                                       th:text="${brand.name}">Brand Name</label>
+                                <span class="brand-count" th:text="${brand.count}">(50)</span>
+                            </div>
+                        </div>
+
+                        <!-- Ratings -->
+                        <div class="filter-section">
+                            <div class="filter-title">Rating</div>
+                            <div class="form-check" th:each="rating : ${ratings}">
+                                <input class="form-check-input" type="checkbox" 
+                                       th:id="'rating-' + ${rating.stars}"
+                                       th:checked="${rating.selected}"
+                                       th:onclick="'toggleRating(' + ${rating.stars} + ')'">
+                                <label class="form-check-label" 
+                                       th:for="'rating-' + ${rating.stars}">
+                                    <span class="text-warning">
+                                        <i class="bi bi-star-fill" 
+                                           th:each="star : ${#numbers.sequence(0, rating.stars - 1)}"></i>
+                                    </span>
+                                    <span class="text-muted">
+                                        <i class="bi bi-star" 
+                                           th:each="star : ${#numbers.sequence(rating.stars, 4)}"></i>
+                                    </span>
+                                    <span class="brand-count" th:text="'(' + ${rating.count} + ')'">(50)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Clear Filters -->
+                        <button class="btn btn-outline-primary w-100" onclick="clearFilters()">
+                            Clear All Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="col-md-9">
+                    <!-- Products Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h4 class="mb-0" th:text="${category != null ? category.name : 'All Products'}">
+                                Category Name
+                            </h4>
+                            <small class="text-muted" th:text="${totalProducts + ' products found'}">
+                                150 products found
+                            </small>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <select class="form-select sort-dropdown" onchange="sortProducts(this.value)">
+                                <option value="popular" th:selected="${sort == 'popular'}">Most Popular</option>
+                                <option value="newest" th:selected="${sort == 'newest'}">Newest First</option>
+                                <option value="price-low" th:selected="${sort == 'price-low'}">Price: Low to High</option>
+                                <option value="price-high" th:selected="${sort == 'price-high'}">Price: High to Low</option>
+                                <option value="rating" th:selected="${sort == 'rating'}">Highest Rated</option>
+                            </select>
+                            <div class="view-options">
+                                <button class="view-btn active" onclick="changeView('grid')">
+                                    <i class="bi bi-grid"></i>
+                                </button>
+                                <button class="view-btn" onclick="changeView('list')">
+                                    <i class="bi bi-list"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="row g-4" id="productsGrid">
+                        <div th:each="product : ${products}" class="col-md-4">
+                            <div class="product-card">
+                                <div class="position-relative">
+                                    <img th:src="${product.image}" class="product-image" 
+                                         th:alt="${product.name}">
+                                    <button class="wishlist-btn" 
+                                            th:classappend="${product.isWishlisted ? 'active' : ''}"
+                                            th:onclick="'toggleWishlist(' + ${product.id} + ')'">
+                                        <i class="bi" 
+                                           th:classappend="${product.isWishlisted ? 'bi-heart-fill' : 'bi-heart'}">
+                                        </i>
+                                    </button>
+                                </div>
+                                <div class="product-info">
+                                    <h5 class="product-title">
+                                        <a th:href="@{'/products/' + ${product.id}}" 
+                                           th:text="${product.name}" class="text-decoration-none text-dark">
+                                            Product Name
+                                        </a>
+                                    </h5>
+                                    <div class="product-price">
+                                        <span class="original-price" 
+                                              th:if="${product.originalPrice > product.price}"
+                                              th:text="${'$' + #numbers.formatDecimal(product.originalPrice, 0, 'COMMA', 2, 'POINT')}">
+                                            $199.99
+                                        </span>
+                                        <span th:text="${'$' + #numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}">
+                                            $149.99
+                                        </span>
+                                        <span class="discount-badge" 
+                                              th:if="${product.originalPrice > product.price}"
+                                              th:text="${'-' + #numbers.formatDecimal((product.originalPrice - product.price) / product.originalPrice * 100, 0, 'COMMA', 0, 'POINT') + '%'}">
+                                            -25%
+                                        </span>
+                                    </div>
+                                    <div class="product-rating">
+                                        <i class="bi bi-star-fill" 
+                                           th:each="star : ${#numbers.sequence(0, product.rating - 1)}"></i>
+                                        <i class="bi bi-star" 
+                                           th:each="star : ${#numbers.sequence(product.rating, 4)}"></i>
+                                        <span class="text-muted" th:text="'(' + ${product.reviewCount} + ')'">(50)</span>
+                                    </div>
+                                    <div class="product-meta">
+                                        <div th:text="${product.brand}">Brand Name</div>
+                                        <div th:if="${product.stock <= 10}" class="text-danger">
+                                            Only <span th:text="${product.stock}">5</span> left in stock
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Products List View -->
+                    <div class="product-list-view" id="productsList">
+                        <div th:each="product : ${products}" class="product-card mb-3">
+                            <div class="row g-0">
+                                <div class="col-md-3">
+                                    <div class="position-relative">
+                                        <img th:src="${product.image}" class="product-image" 
+                                             th:alt="${product.name}">
+                                        <button class="wishlist-btn" 
+                                                th:classappend="${product.isWishlisted ? 'active' : ''}"
+                                                th:onclick="'toggleWishlist(' + ${product.id} + ')'">
+                                            <i class="bi" 
+                                               th:classappend="${product.isWishlisted ? 'bi-heart-fill' : 'bi-heart'}">
+                                            </i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="product-info">
+                                        <h5 class="product-title">
+                                            <a th:href="@{'/products/' + ${product.id}}" 
+                                               th:text="${product.name}" class="text-decoration-none text-dark">
+                                                Product Name
+                                            </a>
+                                        </h5>
+                                        <div class="product-price">
+                                            <span class="original-price" 
+                                                  th:if="${product.originalPrice > product.price}"
+                                                  th:text="${'$' + #numbers.formatDecimal(product.originalPrice, 0, 'COMMA', 2, 'POINT')}">
+                                                $199.99
+                                            </span>
+                                            <span th:text="${'$' + #numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}">
+                                                $149.99
+                                            </span>
+                                            <span class="discount-badge" 
+                                                  th:if="${product.originalPrice > product.price}"
+                                                  th:text="${'-' + #numbers.formatDecimal((product.originalPrice - product.price) / product.originalPrice * 100, 0, 'COMMA', 0, 'POINT') + '%'}">
+                                                -25%
+                                            </span>
+                                        </div>
+                                        <div class="product-rating">
+                                            <i class="bi bi-star-fill" 
+                                               th:each="star : ${#numbers.sequence(0, product.rating - 1)}"></i>
+                                            <i class="bi bi-star" 
+                                               th:each="star : ${#numbers.sequence(product.rating, 4)}"></i>
+                                            <span class="text-muted" th:text="'(' + ${product.reviewCount} + ')'">(50)</span>
+                                        </div>
+                                        <div class="product-meta">
+                                            <div th:text="${product.brand}">Brand Name</div>
+                                            <div th:if="${product.stock <= 10}" class="text-danger">
+                                                Only <span th:text="${product.stock}">5</span> left in stock
+                                            </div>
+                                        </div>
+                                        <p class="mt-2" th:text="${product.shortDescription}">
+                                            Product description goes here...
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="product-actions p-3">
+                                        <button class="btn btn-primary w-100 mb-2" 
+                                                th:onclick="'addToCart(' + ${product.id} + ')'">
+                                            Add to Cart
+                                        </button>
+                                        <button class="btn btn-outline-primary w-100" 
+                                                th:onclick="'buyNow(' + ${product.id} + ')'">
+                                            Buy Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- No Results -->
+                    <div th:if="${#lists.isEmpty(products)}" class="no-results">
+                        <i class="bi bi-search"></i>
+                        <h4>No products found</h4>
+                        <p class="text-muted">Try adjusting your filters or search criteria</p>
+                        <button class="btn btn-primary" onclick="clearFilters()">
+                            Clear All Filters
+                        </button>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav th:if="${totalPages > 1}" aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{${currentUrl}(page=${currentPage - 1})}">Previous</a>
+                            </li>
+                            <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}"
+                                th:classappend="${page == currentPage ? 'active' : ''}">
+                                <a class="page-link" th:href="@{${currentUrl}(page=${page})}" 
+                                   th:text="${page}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{${currentUrl}(page=${currentPage + 1})}">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="fragments/footer :: footer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function changeView(view) {
+            const gridView = document.getElementById('productsGrid');
+            const listView = document.getElementById('productsList');
+            const gridBtn = document.querySelector('.view-btn:first-child');
+            const listBtn = document.querySelector('.view-btn:last-child');
             
-            <div class="sort-options">
-                <span class="filter-label">Sort by:</span>
-                <select class="sort-by" id="sortProducts">
-                    <option value="featured">Featured</option>
-                    <option value="newest">Newest</option>
-                    <option value="price-asc">Price: Low to High</option>
-                    <option value="price-desc">Price: High to Low</option>
-                    <option value="rating">Top Rated</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <!-- Product Grid -->
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="productGrid">
-        <div class="col" th:each="product : ${products}">
-            <div class="card h-100">
-                <div class="card-img-wrapper">
-                    <img th:src="@{${product.imageUrl}}" class="card-img-top" alt="Product Image">
-                    <span class="tag-badge tag-new" th:if="${product.isNew}">NEW</span>
-                    <span class="tag-badge tag-sale" th:if="${product.isOnSale}">SALE</span>
-                    <div class="quick-view">
-                        <i class="bi bi-eye"></i> Quick View
-                    </div>
-                </div>
-                <div class="card-body d-flex flex-column">
-                    <span class="card-category" th:text="${product.category}">Category</span>
-                    <h5 class="card-title" th:text="${product.name}">Product Name</h5>
-                    <div class="rating">
-                        <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, product.rating)}"></i>
-                        <i class="bi bi-star" th:each="i : ${#numbers.sequence(product.rating+1, 5)}"></i>
-                        <span class="rating-count">(24 reviews)</span>
-                    </div>
-                    <p class="card-text" th:text="${product.description}">Product Description</p>
-                    <div class="price-container">
-                        <span class="price">₹<span th:text="${product.price}">0.00</span></span>
-                        <span class="old-price" th:if="${product.isOnSale}">₹<span th:text="${product.oldPrice}">0.00</span></span>
-                        <span class="discount-badge" th:if="${product.isOnSale}">-20%</span>
-                    </div>
-                    <div class="card-actions mt-auto">
-                        <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-view">Details</a>
-                        <button class="btn btn-add"><i class="bi bi-cart-plus"></i>Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- No Products Message -->
-    <div class="empty-state" th:if="${products.size() == 0}">
-        <img src="/images/empty-cart.svg" alt="No products found">
-        <h4>No products found</h4>
-        <p>We couldn't find any products matching your criteria. Try adjusting your filters or browse our other categories.</p>
-        <a href="/products" class="btn btn-view">View All Products</a>
-    </div>
-
-    <!-- Pagination -->
-    <div class="pagination-container">
-        <ul class="pagination">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" aria-label="Previous">
-                    <i class="bi bi-chevron-left"></i>
-                </a>
-            </li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                    <i class="bi bi-chevron-right"></i>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
-
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Search functionality
-    const searchInput = document.getElementById('searchInput');
-    const products = document.querySelectorAll('#productGrid .col');
-
-    searchInput.addEventListener('keyup', function () {
-        const term = this.value.toLowerCase();
-        products.forEach(p => {
-            const name = p.querySelector('.card-title').textContent.toLowerCase();
-            const description = p.querySelector('.card-text').textContent.toLowerCase();
-            const category = p.querySelector('.card-category')?.textContent.toLowerCase() || '';
-            p.style.display = (name.includes(term) || description.includes(term) || category.includes(term)) ? 'block' : 'none';
-        });
-    });
-
-    // Sorting functionality
-    const sortSelect = document.getElementById('sortProducts');
-    
-    sortSelect.addEventListener('change', function() {
-        const sortValue = this.value;
-        const productsArray = Array.from(products);
-        
-        productsArray.sort((a, b) => {
-            switch(sortValue) {
-                case 'price-asc':
-                    return getPriceValue(a) - getPriceValue(b);
-                case 'price-desc':
-                    return getPriceValue(b) - getPriceValue(a);
-                case 'newest':
-                    return a.querySelector('.tag-badge.tag-new') ? -1 : 1;
-                case 'rating':
-                    return getRatingValue(b) - getRatingValue(a);
-                default:
-                    return 0;
+            if (view === 'grid') {
+                gridView.style.display = 'flex';
+                listView.style.display = 'none';
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+            } else {
+                gridView.style.display = 'none';
+                listView.style.display = 'block';
+                gridBtn.classList.remove('active');
+                listBtn.classList.add('active');
             }
-        });
-        
-        const productGrid = document.getElementById('productGrid');
-        productsArray.forEach(product => {
-            productGrid.appendChild(product);
-        });
-    });
-    
-    function getPriceValue(product) {
-        const priceText = product.querySelector('.price span').textContent;
-        return parseFloat(priceText);
-    }
-    
-    function getRatingValue(product) {
-        return product.querySelectorAll('.bi-star-fill').length;
-    }
-    
-    // Quick view functionality
-    document.querySelectorAll('.quick-view').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const card = this.closest('.card');
-            const productId = card.querySelector('a').getAttribute('href').split('/').pop();
+        }
+
+        function toggleCategory(categoryId) {
+            const checkbox = document.getElementById('category-' + categoryId);
+            updateFilters('category', categoryId, checkbox.checked);
+        }
+
+        function toggleBrand(brandId) {
+            const checkbox = document.getElementById('brand-' + brandId);
+            updateFilters('brand', brandId, checkbox.checked);
+        }
+
+        function toggleRating(rating) {
+            const checkbox = document.getElementById('rating-' + rating);
+            updateFilters('rating', rating, checkbox.checked);
+        }
+
+        function updateFilters(type, value, checked) {
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams(url.search);
             
-            // Here you would typically open a modal with product details
-            // For demonstration purposes, we're just navigating to the product page
-            window.location.href = `/product/${productId}`;
-        });
-    });
-</script>
+            if (checked) {
+                params.append(type, value);
+            } else {
+                const values = params.getAll(type);
+                params.delete(type);
+                values.forEach(v => {
+                    if (v !== value.toString()) {
+                        params.append(type, v);
+                    }
+                });
+            }
+            
+            url.search = params.toString();
+            window.location.href = url.toString();
+        }
+
+        function removeFilter(filterId) {
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams(url.search);
+            params.delete(filterId);
+            url.search = params.toString();
+            window.location.href = url.toString();
+        }
+
+        function clearFilters() {
+            const url = new URL(window.location.href);
+            url.search = '';
+            window.location.href = url.toString();
+        }
+
+        function sortProducts(value) {
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams(url.search);
+            params.set('sort', value);
+            url.search = params.toString();
+            window.location.href = url.toString();
+        }
+
+        function toggleWishlist(productId) {
+            // Here you would typically make an AJAX call to update the wishlist
+            const btn = event.currentTarget;
+            const icon = btn.querySelector('i');
+            
+            if (btn.classList.contains('active')) {
+                btn.classList.remove('active');
+                icon.classList.replace('bi-heart-fill', 'bi-heart');
+            } else {
+                btn.classList.add('active');
+                icon.classList.replace('bi-heart', 'bi-heart-fill');
+            }
+        }
+
+        function addToCart(productId) {
+            // Here you would typically make an AJAX call to add the product to cart
+            window.location.href = `/cart?productId=${productId}&quantity=1`;
+        }
+
+        function buyNow(productId) {
+            window.location.href = `/checkout?productId=${productId}&quantity=1`;
+        }
+    </script>
 </body>
 </html>
