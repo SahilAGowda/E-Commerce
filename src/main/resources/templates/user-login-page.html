@@ -28,28 +28,97 @@
     <div class="login-container">
         <h2 class="text-center mb-4">Welcome Back</h2>
         
-        <div th:if="${message}" class="alert" th:classappend="${error} ? 'alert-danger' : 'alert-success'" role="alert">
-            <span th:text="${message}"></span>
-        </div>
-
-        <form th:action="@{/user-login}" method="POST">
+        <div id="message-container" class="alert d-none" role="alert"></div>
+        
+        <form id="loginForm">
             <div class="mb-3">
-                <input type="email" class="form-control" name="email" placeholder="Email Address" required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required>
             </div>
             <div class="mb-3">
-                <input type="password" class="form-control" name="password" placeholder="Password" required>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
             </div>
             <div class="text-end mb-3">
                 <a href="/forgot-password">Forgot Password?</a>
             </div>
             <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
-
+        
         <div class="text-center mt-4">
             Don't have an account? <a href="/user-register">Register here</a>
         </div>
     </div>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Check for registration success message in URL parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('registered') && urlParams.get('registered') === 'true') {
+                showMessage('Registration successful! Please login with your credentials.', false);
+            }
+        });
+        
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get login credentials
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Create login request object
+            const loginData = {
+                email: email,
+                password: password
+            };
+            
+            // Send API request
+            fetch('/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text || 'Login failed');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.user) {
+                    // Store user info in localStorage
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Show success message
+                    showMessage('Login successful! Redirecting...', false);
+                    
+                    // Redirect based on user role
+                    setTimeout(() => {
+                        if (data.user.role === 'ADMIN') {
+                            window.location.href = '/admin/dashboard';
+                        } else {
+                            window.location.href = '/';  // Redirect to home/shop
+                        }
+                    }, 1000);
+                } else {
+                    showMessage('Login failed: ' + (data.message || 'Unknown error'), true);
+                }
+            })
+            .catch(error => {
+                showMessage('Error: ' + error.message, true);
+            });
+        });
+        
+        function showMessage(message, isError) {
+            const messageContainer = document.getElementById('message-container');
+            messageContainer.textContent = message;
+            messageContainer.classList.remove('d-none', 'alert-danger', 'alert-success');
+            messageContainer.classList.add(isError ? 'alert-danger' : 'alert-success');
+        }
+    </script>
 </body>
 </html>

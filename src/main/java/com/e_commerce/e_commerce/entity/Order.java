@@ -1,122 +1,34 @@
 package com.e_commerce.e_commerce.entity;
 
-import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
-@Table(name = "orders")
 public class Order {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String orderId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems = new ArrayList<>();
-
-    @Column(nullable = false)
-    private BigDecimal totalAmount;
-
-    @Column(nullable = false)
-    private String status; // PENDING, PAID, SHIPPED, DELIVERED, CANCELLED
-
-    private String shippingAddress;
-    private String billingAddress;
+    private String productId;
     private String paymentMethod;
-    private LocalDateTime orderDate;
-    private LocalDateTime updatedAt;
+    private int amount;
+    private String email;
+    private String customerMobileNumber;
 
-    @PrePersist
-    protected void onCreate() {
-        orderDate = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+    public String getOrderId() {
+        return orderId;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
-    // Helper methods
-    public void calculateTotalAmount() {
-        this.totalAmount = orderItems.stream()
-            .map(OrderItem::getSubtotal)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    public String getProductId() {
+        return productId;
     }
 
-    public void addOrderItem(OrderItem item) {
-        orderItems.add(item);
-        item.setOrder(this);
-        calculateTotalAmount();
-    }
-
-    public void removeOrderItem(OrderItem item) {
-        orderItems.remove(item);
-        item.setOrder(null);
-        calculateTotalAmount();
-    }
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getShippingAddress() {
-        return shippingAddress;
-    }
-
-    public void setShippingAddress(String shippingAddress) {
-        this.shippingAddress = shippingAddress;
-    }
-
-    public String getBillingAddress() {
-        return billingAddress;
-    }
-
-    public void setBillingAddress(String billingAddress) {
-        this.billingAddress = billingAddress;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public String getPaymentMethod() {
@@ -127,19 +39,27 @@ public class Order {
         this.paymentMethod = paymentMethod;
     }
 
-    public LocalDateTime getOrderDate() {
-        return orderDate;
+    public int getAmount() {
+        return amount;
     }
 
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getCustomerMobileNumber() {
+        return customerMobileNumber;
+    }
+
+    public void setCustomerMobileNumber(String customerMobileNumber) {
+        this.customerMobileNumber = customerMobileNumber;
     }
 }

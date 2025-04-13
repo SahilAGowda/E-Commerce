@@ -1,16 +1,16 @@
-// UserRepository.java
 package com.e_commerce.e_commerce.repository;
 
+import org.springframework.data.repository.CrudRepository;
 import com.e_commerce.e_commerce.entity.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+public interface UserRepository extends CrudRepository<User, String> {
+  
+  // Find user by their email address
+  public User findByEmail(String email);
+  
+  // Find user by their phone number
+  public User findByMobileNumber(String mobileNumber);
 
-@Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
-    boolean existsByEmail(String email);
-    List<User> findByRole(String role);
+  // Find user by their username
+  public User findByUsername(String username);
 }

@@ -1,92 +1,34 @@
 package com.e_commerce.e_commerce.entity;
 
-import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
-@Table(name = "products")
 public class Product {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String product_id;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
-    private BigDecimal price;
-
-    @Column(nullable = false)
-    private Integer stockQuantity;
-
-    private String imageUrl;
+    private String product_name;
     private String category;
-    private boolean active = true;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private String brand;
+    private String price;
+    private String added_date;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+    public String getProductId() {
+        return product_id;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    public void setProductId(String product_id) {
+        this.product_id = product_id;
     }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
+    public String getProductName() {
+        return product_name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public Integer getStockQuantity() {
-        return stockQuantity;
-    }
-
-    public void setStockQuantity(Integer stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setProductName(String product_name) {
+        this.product_name = product_name;
     }
 
     public String getCategory() {
@@ -97,27 +39,31 @@ public class Product {
         this.category = category;
     }
 
-    public boolean isActive() {
-        return active;
+    public String getBrand() {
+        return brand;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    // TODO: price should ideally be a numeric type (e.g., double or BigDecimal)
+
+    public String getPrice() {
+        return price;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setPrice(String price) {
+        this.price = price;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    // TODO: added_date can be parsed into Date or LocalDateTime for better handling
+
+    public String getAddedDate() {
+        return added_date;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setAddedDate(String added_date) {
+        this.added_date = added_date;
     }
-} 
+}
