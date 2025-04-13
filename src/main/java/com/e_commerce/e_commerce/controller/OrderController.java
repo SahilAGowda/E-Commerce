@@ -5,6 +5,7 @@ import com.e_commerce.e_commerce.entity.User;
 import com.e_commerce.e_commerce.service.OrderService;
 import com.e_commerce.e_commerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +33,28 @@ public class OrderController {
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order order) {
         order.setId(id);
         return ResponseEntity.ok(orderService.updateOrder(order));
+    }
+    
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Order> updateOrderStatus(
+            @PathVariable Long id, 
+            @RequestParam String status) {
+        return orderService.getOrderById(id)
+                .map(order -> {
+                    order.setStatus(status);
+                    return ResponseEntity.ok(orderService.updateOrder(order));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{id}/checkout")
+    public ResponseEntity<Order> processOrderCheckout(@PathVariable Long id) {
+        return orderService.getOrderById(id)
+                .map(order -> {
+                    Order processedOrder = orderService.processOrderPayment(order);
+                    return ResponseEntity.ok(processedOrder);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
@@ -72,4 +95,9 @@ public class OrderController {
                 .map(user -> ResponseEntity.ok(orderService.getOrdersByUserAndStatus(user, status)))
                 .orElse(ResponseEntity.notFound().build());
     }
-} 
+    
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleExceptions(Exception e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}

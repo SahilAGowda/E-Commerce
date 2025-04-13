@@ -27,6 +27,13 @@ public class OrderItem {
     @Column(nullable = false)
     private BigDecimal subtotal;
 
+    // Helper method to calculate subtotal
+    public void calculateSubtotal() {
+        if (this.quantity != null && this.unitPrice != null) {
+            this.subtotal = this.unitPrice.multiply(new BigDecimal(this.quantity));
+        }
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -58,6 +65,7 @@ public class OrderItem {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+        calculateSubtotal();
     }
 
     public BigDecimal getUnitPrice() {
@@ -66,6 +74,7 @@ public class OrderItem {
 
     public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
+        calculateSubtotal();
     }
 
     public BigDecimal getSubtotal() {
@@ -75,4 +84,4 @@ public class OrderItem {
     public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
     }
-} 
+}

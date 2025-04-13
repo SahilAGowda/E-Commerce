@@ -2,6 +2,8 @@ package com.e_commerce.e_commerce.service;
 
 import com.e_commerce.e_commerce.entity.Order;
 import com.e_commerce.e_commerce.entity.User;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +16,6 @@ public interface OrderService {
     List<Order> getOrdersByUser(User user);
     List<Order> getOrdersByStatus(String status);
     List<Order> getOrdersByUserAndStatus(User user, String status);
-} 
+    Order processOrderPayment(Order order);
+    List<Order> getRecentOrders(int days);
+}

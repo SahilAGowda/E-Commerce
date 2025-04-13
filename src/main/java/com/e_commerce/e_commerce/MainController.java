@@ -66,22 +66,12 @@ public class MainController {
 
     @GetMapping("/user-dashboard")
     public String userDashboardPage(Model model) {
-        // In a real application, you would get the current user from the session
-        // For now, we'll just pass all users
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
         return "user-dashboard-page.html";
     }
 
     // 2. Shopping Pages
-
-    @GetMapping("/")
-    public String mainPage(Model model) {
-        // Get featured products for the homepage
-        List<Product> featuredProducts = productService.getActiveProducts();
-        model.addAttribute("featuredProducts", featuredProducts);
-        return "main-page.html";
-    }
 
     @GetMapping("/products")
     public String productsRedirect() {
@@ -99,9 +89,7 @@ public class MainController {
     @GetMapping("/product-details/{id}")
     public String productDetailsPage(@PathVariable Long id, Model model) {
         // Get product details by ID
-        productService.getProductById(id).ifPresent(product -> 
-            model.addAttribute("product", product)
-        );
+        productService.getProductById(id).ifPresent(product -> model.addAttribute("product", product));
         return "product-details-page.html";
     }
 
@@ -166,9 +154,7 @@ public class MainController {
     @GetMapping("/edit-product/{id}")
     public String editProductPage(@PathVariable Long id, Model model) {
         // Get product by ID for editing
-        productService.getProductById(id).ifPresent(product -> 
-            model.addAttribute("product", product)
-        );
+        productService.getProductById(id).ifPresent(product -> model.addAttribute("product", product));
         return "edit-product-page.html";
     }
 
@@ -194,5 +180,10 @@ public class MainController {
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
         return "manage-users-page.html";
+    }
+
+    @GetMapping("/")
+    public String loginSelectionPage() {
+        return "main-selection-page.html";
     }
 }

@@ -1,6 +1,7 @@
 package com.e_commerce.e_commerce.service;
 
 import com.e_commerce.e_commerce.entity.User;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -12,4 +13,7 @@ public interface UserService {
     Optional<User> getUserByEmail(String email);
     List<User> getAllUsers();
     boolean existsByEmail(String email);
-} 
+    Optional<User> authenticateUser(String email, String password);
+    boolean changePassword(Long userId, String currentPassword, String newPassword);
+    List<User> getUsersByRole(String role);
+}

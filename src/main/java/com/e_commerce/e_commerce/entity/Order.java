@@ -43,6 +43,25 @@ public class Order {
         updatedAt = LocalDateTime.now();
     }
 
+    // Helper methods
+    public void calculateTotalAmount() {
+        this.totalAmount = orderItems.stream()
+            .map(OrderItem::getSubtotal)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public void addOrderItem(OrderItem item) {
+        orderItems.add(item);
+        item.setOrder(this);
+        calculateTotalAmount();
+    }
+
+    public void removeOrderItem(OrderItem item) {
+        orderItems.remove(item);
+        item.setOrder(null);
+        calculateTotalAmount();
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -123,4 +142,4 @@ public class Order {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-} 
+}
